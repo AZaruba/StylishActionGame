@@ -7,6 +7,7 @@ public class CharacterCombatController : MonoBehaviour {
     private bool isAttacking;
     private bool hasLinked;
     CharacterEnum constants;
+    List<CharacterEnum.Attack> attacks;
 
 	// Use this for initialization
 	void Start () {
@@ -14,20 +15,36 @@ public class CharacterCombatController : MonoBehaviour {
 
         isAttacking = false;
         hasLinked = false;
-	}
+
+        attacks = new List<CharacterEnum.Attack>();
+
+        InitializeAttack(1.5f, 0.5f, 10, CharacterEnum.Controls.AttackOne);
+        InitializeAttack(1.0f, 0.25f, 15, CharacterEnum.Controls.AttackOne);
+        attacks[0].LinkAttacks(attacks[1]);
+    }
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetKeyDown(CharacterEnum.Controls.AttackOne))
-            StartCoroutine(Attack());
+
+        // for each potential combo start, we want a StartCoroutine here
+        if (Input.GetKeyDown(attacks[0].inputKey) && !isAttacking)
+            StartCoroutine(Attack(attacks[0]));
 
 
 	}
 
-    public IEnumerator Attack()
+    private void InitializeAttack(float aTime, float lTime, int aDamage, KeyCode key)
+    {
+        attacks.Add(new CharacterEnum.Attack(aTime, lTime, aDamage, key));
+    }
+
+    /* COROUTINES
+     * Because attacks occur while the user performs some other input, we want them to go in their own coroutines.
+     */
+    public IEnumerator Attack(CharacterEnum.Attack attack)
     {
         isAttacking = true;
-        float time = CharacterEnum.AttackTimes.BasicAttackTime;
+        float time = attack.attackTime;
         LoadAttackTexture(); // TODO: REMOVE
 
         while (time > 0)
@@ -35,30 +52,33 @@ public class CharacterCombatController : MonoBehaviour {
             time -= Time.deltaTime;
 
             // if the time remaining in the animation reaches the link value, start the link
-            /* DISABLING COMBOS until ONE attack works
-            if (time <= CharacterEnum.AttackTimes.AttackLinkTime && !hasLinked)
+            // DISABLING COMBOS until ONE attack works
+            if (time <= attack.linkTime && !hasLinked)
             {
-                StartCoroutine(LinkCombo(CharacterEnum.AttackType.FollowupPunch));
+                LoadLinkTexture();
+                StartCoroutine(LinkCombo(attack.nextAttack, attack.linkTime));
+                yield break;
             }
-            */
+
             yield return null;
         }
-        if (!hasLinked)
-            isAttacking = false;
 
+        isAttacking = false;
         ResetTexture(); // TODO: REMOVE
         yield return null;
     }
 
-    public IEnumerator FollowupAttack()
+    public IEnumerator LinkCombo(CharacterEnum.Attack nextAttack, float linkTime)
     {
-        isAttacking = false;
-        yield return null;
-    }
+        // short circuit: if we cannot follow up the current attack, just reset to one
+        if (nextAttack == null)
+        {
+            isAttacking = false;
+            ResetTexture();
+            yield break;
+        }
 
-    public IEnumerator LinkCombo(CharacterEnum.AttackType attackType)
-    {
-        float time = CharacterEnum.AttackTimes.AttackLinkTime;
+        float time = linkTime;
         hasLinked = true;
 
         while (time > 0)
@@ -67,10 +87,16 @@ public class CharacterCombatController : MonoBehaviour {
 
             if (Input.GetKeyDown(CharacterEnum.Controls.AttackOne))
             {
-                StartCoroutine(FollowupAttack());
+                hasLinked = false;
+                StartCoroutine(Attack(nextAttack));
+                yield break;
             }
             yield return null;
         }
+
+        isAttacking = false;
+        hasLinked = false;
+        ResetTexture();
         yield return null;
     }
 
@@ -83,6 +109,14 @@ public class CharacterCombatController : MonoBehaviour {
     {
         Texture2D texture;
         texture = (Texture2D)Resources.Load("VisualAssets/Characters/PC/Textures/testCharAttack");
+
+        gameObject.GetComponent<Renderer>().material.mainTexture = texture;
+    }
+
+    private void LoadLinkTexture()
+    {
+        Texture2D texture;
+        texture = (Texture2D)Resources.Load("VisualAssets/Characters/PC/Textures/testCharHit");
 
         gameObject.GetComponent<Renderer>().material.mainTexture = texture;
     }

@@ -4,24 +4,42 @@ using UnityEngine;
 
 public class CharacterEnum : MonoBehaviour {
 
-    public class AttackTimes
+    public class Attack
     {
-        public const float BasicAttackTime = 1.0f;
-        public const float BasicFollowupTime = 1.0f;
-        public const float BasicFinisherTime = 1.0f;
+        public Attack(float aTime, float lTime, int aDamage, KeyCode key)
+        {
+            this.attackTime = aTime;
+            this.linkTime = lTime;
+            this.damage = aDamage;
+            this.inputKey = key;
 
-        public const float AttackLinkTime = 0.5f;
-    }
+            // xAxis = 0;
+            // yAxis = 0;
+        }
 
-    public class DamageValues
-    {
-        public const int BasicAttackDamage = 10;
-        public const int BasicFollowupDamage = 10;
-        public const int BasicFinisherDamage = 20;
+        public void LinkAttacks(Attack next)
+        {
+            this.nextAttack = next;
+        }
+
+        // Timing data
+        public float attackTime;
+        public float linkTime;
+
+        // Combat data
+        public int damage;
+        public Attack nextAttack;
+
+        // Input data
+        public KeyCode inputKey;
+        // public float xAxis;
+        // public float yAxis;
+
     }
 
     public enum AttackType
     {
+        NoAttack = -1,
         BasicPunch,
         FollowupPunch,
         FinisherPunch,
