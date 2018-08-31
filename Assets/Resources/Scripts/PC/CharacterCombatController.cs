@@ -6,19 +6,18 @@ public class CharacterCombatController : MonoBehaviour {
 
     private bool isAttacking;
     private bool hasLinked;
-    CharacterEnum constants;
     List<CharacterEnum.Attack> attacks;
+    CharacterEnum.Attack currentAttack;
 
 	// Use this for initialization
 	void Start () {
-        constants = gameObject.GetComponent<CharacterEnum>();
-
         isAttacking = false;
         hasLinked = false;
 
         attacks = new List<CharacterEnum.Attack>();
+        currentAttack = null;
 
-        InitializeAttack(1.5f, 0.5f, 10, CharacterEnum.Controls.AttackOne);
+        InitializeAttack(0.75f, 0.25f, 10, CharacterEnum.Controls.AttackOne);
         InitializeAttack(1.0f, 0.25f, 15, CharacterEnum.Controls.AttackOne);
         attacks[0].LinkAttacks(attacks[1]);
     }
@@ -28,14 +27,34 @@ public class CharacterCombatController : MonoBehaviour {
 
         // for each potential combo start, we want a StartCoroutine here
         if (Input.GetKeyDown(attacks[0].inputKey) && !isAttacking)
+        {
             StartCoroutine(Attack(attacks[0]));
-
-
+        }
 	}
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        // this suffices while we still do not have the player taking damage implemented
+        if (!isAttacking)
+        {
+            return;
+        }
+        
+        IEnemy enemy = collision.gameObject.GetComponent<IEnemy>();
+        if (enemy == null)
+            return;
+
+        enemy.GetHit(currentAttack.damage);
+    }
 
     private void InitializeAttack(float aTime, float lTime, int aDamage, KeyCode key)
     {
         attacks.Add(new CharacterEnum.Attack(aTime, lTime, aDamage, key));
+    }
+
+    public bool IsAttacking()
+    {
+        return this.isAttacking;
     }
 
     /* COROUTINES
@@ -43,6 +62,7 @@ public class CharacterCombatController : MonoBehaviour {
      */
     public IEnumerator Attack(CharacterEnum.Attack attack)
     {
+        currentAttack = attack; // set attack BEFORE in case coroutine does not set isAttacking
         isAttacking = true;
         float time = attack.attackTime;
         LoadAttackTexture(); // TODO: REMOVE
@@ -64,6 +84,7 @@ public class CharacterCombatController : MonoBehaviour {
         }
 
         isAttacking = false;
+        currentAttack = null; // reset attack AFTER in case coroutine does not go past isAttacking
         ResetTexture(); // TODO: REMOVE
         yield return null;
     }

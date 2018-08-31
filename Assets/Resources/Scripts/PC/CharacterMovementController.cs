@@ -5,17 +5,19 @@ using UnityEngine;
 public class CharacterMovementController : MonoBehaviour {
 
     public float moveSpeed;
-    private float currentSpeed;
+    // private float currentSpeed;
 
     private Camera mainCam;
 
-    private GravityController gravity; 
+    // private GravityController gravity;
+    private CharacterCombatController combat;
 
 	// Use this for initialization
 	void Start ()
     {
-        currentSpeed = 0f;
-        gravity = gameObject.GetComponent<GravityController>();
+        // currentSpeed = 0f;
+        // gravity = gameObject.GetComponent<GravityController>();
+        combat = gameObject.GetComponent<CharacterCombatController>();
 
         mainCam = Camera.main;
     }
@@ -23,10 +25,14 @@ public class CharacterMovementController : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        if (Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0)
+        if (!combat.IsAttacking())
         {
-            transform.position += WalkInput();
+            if (Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0)
+            {
+                transform.position += WalkInput();
+            }
         }
+        
 
     }
 
