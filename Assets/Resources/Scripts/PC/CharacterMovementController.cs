@@ -5,19 +5,22 @@ using UnityEngine;
 public class CharacterMovementController : MonoBehaviour {
 
     public float moveSpeed;
+    public float deadZone;
+    private int collisionMask = 1 << 10;
     // private float currentSpeed;
 
     private Camera mainCam;
 
-    // private GravityController gravity;
     private CharacterCombatController combat;
 
 	// Use this for initialization
 	void Start ()
     {
+        Physics.IgnoreLayerCollision(11, 10); // ignore collisions between player and weapon
         // currentSpeed = 0f;
         // gravity = gameObject.GetComponent<GravityController>();
         combat = gameObject.GetComponent<CharacterCombatController>();
+        // rBody = gameObject.GetComponent<Rigidbody>();
 
         mainCam = Camera.main;
     }
@@ -27,7 +30,7 @@ public class CharacterMovementController : MonoBehaviour {
     {
         if (!combat.IsAttacking())
         {
-            if (Input.GetAxis("Vertical") != 0 || Input.GetAxis("Horizontal") != 0)
+            if (Mathf.Abs(Input.GetAxis("Vertical")) > deadZone || Mathf.Abs(Input.GetAxis("Horizontal")) > deadZone)
             {
                 transform.position += WalkInput();
             }
