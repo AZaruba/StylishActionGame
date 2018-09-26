@@ -11,11 +11,13 @@ public class Weapon : MonoBehaviour {
 
     public float debugAttackDistance;
     private Vector3 debugOriginalPosition;
+    private Quaternion debugOriginalRotation;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start() {
 
-        debugOriginalPosition = new Vector3(0.5f,0,0); // PRE ANIMATION DEBUGGING
+        debugOriginalPosition = transform.localPosition;
+        debugOriginalRotation = transform.localRotation;
 
         isAttacking = false;
         hasLinked = false;
@@ -27,9 +29,9 @@ public class Weapon : MonoBehaviour {
         InitializeAttack(1.0f, 0.25f, 15, CharacterEnum.Controls.AttackOne);
         attacks[0].LinkAttacks(attacks[1]);
     }
-	
-	// Update is called once per frame
-	public void StartAttack () {
+
+    // Update is called once per frame
+    public void StartAttack() {
 
         // for each potential combo start, we want a StartCoroutine here
         if (Input.GetKeyDown(attacks[0].inputKey) && !isAttacking)
@@ -37,7 +39,7 @@ public class Weapon : MonoBehaviour {
             StartCoroutine(Attack(attacks[0]));
             StartCoroutine(Animate(attacks[0].attackTime));
         }
-	}
+    }
 
     private void OnTriggerEnter(Collider collision)
     {
@@ -46,7 +48,7 @@ public class Weapon : MonoBehaviour {
         {
             return;
         }
-        
+
         IEnemy enemy = collision.gameObject.GetComponent<IEnemy>();
         if (enemy == null)
             return;
@@ -107,17 +109,19 @@ public class Weapon : MonoBehaviour {
         }
 
         float time = linkTime;
-        hasLinked = true;
 
         while (time > 0)
         {
             time -= Time.deltaTime;
 
-            if (Input.GetKeyDown(CharacterEnum.Controls.AttackOne))
+            if (Input.GetKeyDown(nextAttack.inputKey))
             {
-                hasLinked = false;
+                hasLinked = true;
                 StartCoroutine(Attack(nextAttack));
+                StartCoroutine(AnimateTwo(nextAttack.attackTime));
+                hasLinked = false;
                 yield break;
+
             }
             yield return null;
         }
@@ -137,7 +141,7 @@ public class Weapon : MonoBehaviour {
     {
         float time = 0;
 
-        while (time < animTime)
+        while (time < animTime && !hasLinked) // when animations are implemented, simply cancel the old anim instead of this not statement
         {
 
             time += Time.deltaTime;
@@ -154,6 +158,37 @@ public class Weapon : MonoBehaviour {
         }
 
         transform.position = transform.parent.position + debugOriginalPosition;
+        transform.rotation = debugOriginalRotation * transform.parent.rotation;
+        yield return null;
+    }
+
+    // a simple differentiator between the two attacks we are currently working on
+    public IEnumerator AnimateTwo(float animTime)
+    {
+        float time = 0;
+
+        transform.position = transform.parent.position + debugOriginalPosition;
+        transform.rotation = debugOriginalRotation * transform.parent.rotation;
+
+        while (time < animTime)
+        {
+
+            time += Time.deltaTime;
+            transform.Rotate(Vector3.forward, Time.deltaTime * 180, Space.Self);
+
+            if (time > animTime / 2)
+            {
+                transform.Translate(0, 0, -1 * debugAttackDistance * Time.deltaTime);
+            }
+            else
+            {
+                transform.Translate(0, 0, debugAttackDistance * Time.deltaTime);
+            }
+            yield return null;
+        }
+
+        transform.position = transform.parent.position + debugOriginalPosition;
+        transform.rotation = debugOriginalRotation * transform.parent.rotation;
         yield return null;
     }
 

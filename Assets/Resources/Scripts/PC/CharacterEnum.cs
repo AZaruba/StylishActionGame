@@ -32,6 +32,7 @@ public class CharacterEnum : MonoBehaviour {
 
         // Input data
         public KeyCode inputKey;
+
         // public float xAxis;
         // public float yAxis;
 

@@ -11,7 +11,7 @@ public class stationarySphere : MonoBehaviour, IEnemy {
 
     // Use this for initialization
     void Start () {
-        health = 11;
+        health = 21;
         isGettingHit = false;
         // attackDamage = 0;
         // moveSpeed = 0;
