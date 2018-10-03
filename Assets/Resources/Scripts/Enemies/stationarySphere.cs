@@ -2,29 +2,37 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class stationarySphere : MonoBehaviour, IEnemy {
+public class StationarySphere : MonoBehaviour, IEnemy {
 
     private int health;
-    private bool isGettingHit;
-    // private int attackDamage;
-    // private float moveSpeed;
+
+    // private bool isGettingHit;
+    // public int attackDamage;
+    public float moveSpeed;
+
+    private Rigidbody rBody;
+    private SceneManager manager;
 
     // Use this for initialization
     void Start () {
         health = 21;
-        isGettingHit = false;
-        // attackDamage = 0;
-        // moveSpeed = 0;
+        // isGettingHit = false;
+
+        rBody = gameObject.GetComponent<Rigidbody>();
+        manager = FindObjectOfType<SceneManager>(); // replace with singleton for scene manager
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
+        rBody.MovePosition(transform.position + CalculateMovement());
 	}
 
     public void GetHit(int damage)
     {
-        isGettingHit = true;
+        // if (isGettingHit)
+        //     return;
+
+        // isGettingHit = true;
 
         LoadHitTexture(); // TODO remove
         Debug.Log("HIT!");
@@ -39,10 +47,12 @@ public class stationarySphere : MonoBehaviour, IEnemy {
         ResetTexture(); // TODO remove
     }
 
+    
     public void ResetHit()
     {
-        isGettingHit = false;
+        // isGettingHit = false;
     }
+    
 
     public void Attack()
     {
@@ -51,12 +61,19 @@ public class stationarySphere : MonoBehaviour, IEnemy {
 
     public Vector3 CalculateMovement()
     {
-        return new Vector3();
+        Vector3 direction = manager.SharePlayerPosition() - transform.position;
+
+        return direction.normalized * moveSpeed * Time.deltaTime;
     }
 
     public void OnDefeat()
     {
         Destroy(gameObject);
+    }
+
+    public Vector3 SendPosition()
+    {
+        return transform.position;
     }
 
     /* DEBUG FUNCTIONS

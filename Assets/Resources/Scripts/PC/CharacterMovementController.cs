@@ -6,15 +6,15 @@ public class CharacterMovementController : MonoBehaviour {
 
     public float moveSpeed;
     public float deadZone;
-    private int collisionMask = 1 << 10;
+    // private int collisionMask = 1 << 10;
     // private float currentSpeed;
 
     private Camera mainCam;
-
     private CharacterCombatController combat;
+    // private Rigidbody rBody;
 
-	// Use this for initialization
-	void Start ()
+    // Use this for initialization
+    void Start()
     {
         Physics.IgnoreLayerCollision(11, 10); // ignore collisions between player and weapon
         // currentSpeed = 0f;
@@ -24,9 +24,9 @@ public class CharacterMovementController : MonoBehaviour {
 
         mainCam = Camera.main;
     }
-	
-	// Update is called once per frame
-	void Update ()
+
+    // Update is called once per frame
+    void Update()
     {
         if (!combat.IsAttacking())
         {
@@ -35,7 +35,7 @@ public class CharacterMovementController : MonoBehaviour {
                 transform.position += WalkInput();
             }
         }
-        
+
 
     }
 
@@ -66,5 +66,10 @@ public class CharacterMovementController : MonoBehaviour {
             throw new System.Exception("Camera not found. Attach a camera object to the character to continue.");
 
         return cameraDirection;
+    }
+
+    public Vector3 SendPosition()
+    {
+        return transform.position;
     }
 }
