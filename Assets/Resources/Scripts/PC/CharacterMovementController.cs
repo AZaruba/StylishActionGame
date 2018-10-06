@@ -27,18 +27,20 @@ public class CharacterMovementController : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+
+    }
+
+    private void FixedUpdate()
+    {
         rBody.velocity = Vector3.zero;
         rBody.angularVelocity = Vector3.zero;
         if (!combat.IsAttacking())
         {
             if (Mathf.Abs(Input.GetAxis("Vertical")) > deadZone || Mathf.Abs(Input.GetAxis("Horizontal")) > deadZone)
             {
-                rBody.MovePosition(transform.position + WalkInput()); // need to figure out "sticking"
-                // transform.position += WalkInput();
+                rBody.MovePosition(transform.position + WalkInput());
             }
         }
-
-
     }
 
     private Vector3 WalkInput()
@@ -53,7 +55,7 @@ public class CharacterMovementController : MonoBehaviour {
         direction.Normalize();
         camDirection.Normalize();
 
-        transform.rotation = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+        rBody.MoveRotation(Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z)));
         direction *= moveSpeed * Time.deltaTime;
 
         return direction;
