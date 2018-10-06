@@ -11,16 +11,15 @@ public class CharacterMovementController : MonoBehaviour {
 
     private Camera mainCam;
     private CharacterCombatController combat;
-    // private Rigidbody rBody;
+    public Rigidbody rBody;
+
 
     // Use this for initialization
     void Start()
     {
         Physics.IgnoreLayerCollision(11, 10); // ignore collisions between player and weapon
-        // currentSpeed = 0f;
-        // gravity = gameObject.GetComponent<GravityController>();
+        // gravity = gameObject.GetComponent<GravityController>(); // coming soon
         combat = gameObject.GetComponent<CharacterCombatController>();
-        // rBody = gameObject.GetComponent<Rigidbody>();
 
         mainCam = Camera.main;
     }
@@ -28,11 +27,14 @@ public class CharacterMovementController : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        rBody.velocity = Vector3.zero;
+        rBody.angularVelocity = Vector3.zero;
         if (!combat.IsAttacking())
         {
             if (Mathf.Abs(Input.GetAxis("Vertical")) > deadZone || Mathf.Abs(Input.GetAxis("Horizontal")) > deadZone)
             {
-                transform.position += WalkInput();
+                rBody.MovePosition(transform.position + WalkInput()); // need to figure out "sticking"
+                // transform.position += WalkInput();
             }
         }
 

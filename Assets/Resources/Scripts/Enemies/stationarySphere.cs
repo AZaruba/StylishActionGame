@@ -24,6 +24,8 @@ public class StationarySphere : MonoBehaviour, IEnemy {
 	
 	// Update is called once per frame
 	void Update () {
+        rBody.velocity = Vector3.zero;
+        rBody.angularVelocity = Vector3.zero;
         rBody.MovePosition(transform.position + CalculateMovement());
 	}
 
