@@ -12,13 +12,13 @@ public class CharacterMovementController : MonoBehaviour {
     private Camera mainCam;
     private CharacterCombatController combat;
     public Rigidbody rBody;
+    public GravityController gravity;
 
 
     // Use this for initialization
     void Start()
     {
         Physics.IgnoreLayerCollision(11, 10); // ignore collisions between player and weapon
-        // gravity = gameObject.GetComponent<GravityController>(); // coming soon
         combat = gameObject.GetComponent<CharacterCombatController>();
 
         mainCam = Camera.main;
@@ -32,15 +32,28 @@ public class CharacterMovementController : MonoBehaviour {
 
     private void FixedUpdate()
     {
+        /* I don't want materials-based physics, setting velocities to zero allows the
+         * Rigidbody to prevent clipping while not causing any unwanted forces.
+         */ 
         rBody.velocity = Vector3.zero;
         rBody.angularVelocity = Vector3.zero;
+
+        // multiple MovePosition calls didn't work, so accumulating vectors and calling it once is a good fix
+        Vector3 newPosition = transform.position;
+
         if (!combat.IsAttacking())
         {
+            if (Input.GetKeyDown(CharacterEnum.Controls.Jump))
+                gravity.StartJump();
+
             if (Mathf.Abs(Input.GetAxis("Vertical")) > deadZone || Mathf.Abs(Input.GetAxis("Horizontal")) > deadZone)
             {
-                rBody.MovePosition(transform.position + WalkInput());
+                newPosition += WalkInput();
             }
         }
+        newPosition += gravity.GetVertTranslation();
+
+        rBody.MovePosition(newPosition);
     }
 
     private Vector3 WalkInput()
