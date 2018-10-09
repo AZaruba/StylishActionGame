@@ -43,10 +43,54 @@ public class GravityController : MonoBehaviour {
 
     private void OnCollisionEnter(Collision collision)
     {
-        ContactPoint cPoint = collision.contacts[0];
-        if (Vector3.Dot(cPoint.normal, Vector3.up) > 0.5)
+        int layer = collision.gameObject.layer;
+        if (layer != 8)
+            return;
+
+        if (layer == 8)
         {
-            grounded = true;
+            ContactPoint cPoint = collision.contacts[0];
+            if (Vector3.Dot(cPoint.normal, Vector3.up) > 0.5)
+            {
+                grounded = true;
+            }
+        }
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        int layer = collision.gameObject.layer;
+        if (layer == 9)
+        {
+            ContactPoint cPoint = collision.contacts[0];
+            if (Vector3.Dot(cPoint.normal, Vector3.up) > 0.5)
+            {
+                grounded = true; // jumping off enemies is neat!
+            }
+        }
+        if (layer == 8)
+        {
+            ContactPoint cPoint = collision.contacts[0];
+            if (Vector3.Dot(cPoint.normal, Vector3.up) > 0.5)
+            {
+                grounded = true;
+            }
+        }
+    }
+
+    /* Need to transplant the slope code I wrote for Mr. Boxington's Adventure
+     * as that worked really well. With no other glitches present this should work great!
+     */
+    private void OnCollisionExit(Collision collision)
+    {
+        int layer = collision.gameObject.layer;
+        if (layer != 8)
+            return;
+
+        if (collision.contacts.Length == 0)
+        {
+            grounded = false;
+            jumpReady = false;
         }
     }
 
