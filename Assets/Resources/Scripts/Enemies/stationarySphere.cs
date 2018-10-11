@@ -6,7 +6,7 @@ public class StationarySphere : MonoBehaviour, IEnemy {
 
     private int health;
 
-    // private bool isGettingHit;
+    private bool isGettingHit;
     // public int attackDamage;
     public float moveSpeed;
 
@@ -22,8 +22,7 @@ public class StationarySphere : MonoBehaviour, IEnemy {
         manager = FindObjectOfType<SceneManager>(); // replace with singleton for scene manager
 	}
 	
-	// Update is called once per frame
-	void Update () {
+	void FixedUpdate () {
         rBody.velocity = Vector3.zero;
         rBody.angularVelocity = Vector3.zero;
         rBody.MovePosition(transform.position + CalculateMovement());
@@ -38,6 +37,7 @@ public class StationarySphere : MonoBehaviour, IEnemy {
 
         LoadHitTexture(); // TODO remove
         Debug.Log("HIT!");
+        StartCoroutine(Stun(1.0f));
 
         health -= damage;
         if (health <= 0)
@@ -63,9 +63,12 @@ public class StationarySphere : MonoBehaviour, IEnemy {
 
     public Vector3 CalculateMovement()
     {
+        if (isGettingHit)
+            return Vector3.zero;
+
         Vector3 direction = manager.SharePlayerPosition() - transform.position;
 
-        return direction.normalized * moveSpeed * Time.deltaTime;
+        return direction.normalized * moveSpeed * Time.fixedDeltaTime;
     }
 
     public void OnDefeat()
@@ -76,6 +79,25 @@ public class StationarySphere : MonoBehaviour, IEnemy {
     public Vector3 SendPosition()
     {
         return transform.position;
+    }
+
+    /* Stun: Animation Coroutine
+     * Allows enemies to be immobilized by attacks. In the future this will enable 
+     * knockback, as the normal movement calculation will be short circuited.
+     */ 
+    private IEnumerator Stun(float stunTime)
+    {
+        isGettingHit = true;
+        float time = stunTime;
+
+        while (time > 0)
+        {
+            time -= Time.fixedDeltaTime;
+            yield return null;
+        }
+
+        isGettingHit = false;
+        yield return null;
     }
 
     /* DEBUG FUNCTIONS

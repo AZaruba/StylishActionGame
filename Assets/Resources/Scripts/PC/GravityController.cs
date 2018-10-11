@@ -41,8 +41,11 @@ public class GravityController : MonoBehaviour {
             if (!jumpReady)
             {
                 verticalTranslation.y -= weightFactor * Time.fixedDeltaTime;
-                if (verticalTranslation.y <= terminalVelocity*-1)
-                    verticalTranslation.y = terminalVelocity*-1;
+                if (verticalTranslation.y <= terminalVelocity * -1)
+                {
+                    verticalTranslation.y = terminalVelocity * -1;
+                }
+                    
             }
         }
     }
@@ -86,22 +89,33 @@ public class GravityController : MonoBehaviour {
 
     /* Need to transplant the slope code I wrote for Mr. Boxington's Adventure
      * as that worked really well. With no other glitches present this should work great!
+     * 
+     * NEW IDEA, COMING SOON:
+     * Instead of doing the raycast method, we send a ray down, get a surface normal,
+     * Then we can get the angle between the player's current direction and the surface.
+     * 
+     * Tan (angleBetween) = x / currentTranslationVector
+     * Adding the vectors of x and our current translation will get us our hypotenuse!
      */
     private void OnCollisionExit(Collision collision)
     {
         int layer = collision.gameObject.layer;
-        if (layer != 8)
+        if (layer != 8 && layer != 9)
             return;
+
+        bool slopingDown = false;
 
         if (grounded)
         {
-            if (Physics.Raycast(transform.position + slopeOffset, Vector3.down, out slopeOut, terminalVelocity * Time.fixedDeltaTime))
+            Debug.Log("we know we left the ground here.");
+            if (Physics.Raycast(transform.position + slopeOffset, Vector3.down, out slopeOut, 1))
             {
-                verticalTranslation = transform.position - slopeOut.point;
+                slopingDown = true;
+                verticalTranslation = slopeOut.point - transform.position;
             }
         }
 
-        if (collision.contacts.Length == 0)
+        if (collision.contacts.Length == 0 && !slopingDown)
         {
             grounded = false;
             jumpReady = false;
