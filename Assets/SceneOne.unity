@@ -715,6 +715,7 @@ MonoBehaviour:
   weightFactor: 0.4
   jumpVelocity: 10
   terminalVelocity: 2
+  objectCollider: {fileID: 1828475836}
 --- !u!1 &1969143558
 GameObject:
   m_ObjectHideFlags: 0

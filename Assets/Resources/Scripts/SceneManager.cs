@@ -14,8 +14,8 @@ public class SceneManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         playerCharacter = FindObjectOfType<CharacterMovementController>(); // skipping Singleton pattern for multiplayer possibilities!
-        Instantiate(sphereEnemy, new Vector3(3, 1, 3), Quaternion.identity);
-        Instantiate(sphereEnemy, new Vector3(-3, 1, 3), Quaternion.identity);
+        // Instantiate(sphereEnemy, new Vector3(3, 1, 3), Quaternion.identity);
+        // Instantiate(sphereEnemy, new Vector3(-3, 1, 3), Quaternion.identity); // disabling while we fix slopes
 
         playerPosition = playerCharacter.SendPosition();
 

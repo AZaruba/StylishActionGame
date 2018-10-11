@@ -69,7 +69,7 @@ public class CharacterMovementController : MonoBehaviour {
         camDirection.Normalize();
 
         rBody.MoveRotation(Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z)));
-        direction *= moveSpeed * Time.deltaTime;
+        direction *= moveSpeed * Time.fixedDeltaTime;
 
         return direction;
     }

@@ -13,11 +13,17 @@ public class GravityController : MonoBehaviour {
 
     private Vector3 verticalTranslation;
 
+    public Collider objectCollider;
+    private Vector3 slopeOffset; // position offset by collider size
+    private RaycastHit slopeOut;
+
 	// Use this for initialization
 	void Start () {
         verticalTranslation = Vector3.zero;
         grounded = false;
         jumpReady = false;
+
+        slopeOffset = Vector3.down * objectCollider.bounds.size.y / 2;
 	}
 
     private void FixedUpdate()
@@ -34,7 +40,7 @@ public class GravityController : MonoBehaviour {
             // gravity stuff
             if (!jumpReady)
             {
-                verticalTranslation.y -= weightFactor * Time.deltaTime;
+                verticalTranslation.y -= weightFactor * Time.fixedDeltaTime;
                 if (verticalTranslation.y <= terminalVelocity*-1)
                     verticalTranslation.y = terminalVelocity*-1;
             }
@@ -86,6 +92,14 @@ public class GravityController : MonoBehaviour {
         int layer = collision.gameObject.layer;
         if (layer != 8)
             return;
+
+        if (grounded)
+        {
+            if (Physics.Raycast(transform.position + slopeOffset, Vector3.down, out slopeOut, terminalVelocity * Time.fixedDeltaTime))
+            {
+                verticalTranslation = transform.position - slopeOut.point;
+            }
+        }
 
         if (collision.contacts.Length == 0)
         {
