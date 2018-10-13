@@ -17,14 +17,18 @@ public class GravityController : MonoBehaviour {
     private Vector3 slopeOffset; // position offset by collider size
     private RaycastHit slopeOut;
 
-	// Use this for initialization
-	void Start () {
+    private SceneManager manager;
+
+    // Use this for initialization
+    void Start () {
         verticalTranslation = Vector3.zero;
         grounded = false;
         jumpReady = false;
 
         slopeOffset = Vector3.down * objectCollider.bounds.size.y / 2;
-	}
+
+        manager = FindObjectOfType<SceneManager>(); // replace with singleton for scene manager
+    }
 
     private void FixedUpdate()
     {
@@ -33,6 +37,15 @@ public class GravityController : MonoBehaviour {
             verticalTranslation = Vector3.zero;
             if (!jumpReady)
                 jumpReady = true;
+
+            // put slope calculations here, broken now
+            if (manager.SharePlayerMoving())
+            {
+                if (Physics.Raycast(transform.position + slopeOffset, Vector3.down, out slopeOut, 1.0f))
+                {
+                    verticalTranslation.y = slopeOut.point.y - transform.position.y;
+                }
+            }
         }
 
         else
@@ -87,35 +100,13 @@ public class GravityController : MonoBehaviour {
         }
     }
 
-    /* Need to transplant the slope code I wrote for Mr. Boxington's Adventure
-     * as that worked really well. With no other glitches present this should work great!
-     * 
-     * NEW IDEA, COMING SOON:
-     * Instead of doing the raycast method, we send a ray down, get a surface normal,
-     * Then we can get the angle between the player's current direction and the surface.
-     * 
-     * Tan (angleBetween) = x / currentTranslationVector
-     * Adding the vectors of x and our current translation will get us our hypotenuse!
-     */
     private void OnCollisionExit(Collision collision)
     {
         int layer = collision.gameObject.layer;
         if (layer != 8 && layer != 9)
             return;
 
-        bool slopingDown = false;
-
-        if (grounded)
-        {
-            Debug.Log("we know we left the ground here.");
-            if (Physics.Raycast(transform.position + slopeOffset, Vector3.down, out slopeOut, 1))
-            {
-                slopingDown = true;
-                verticalTranslation = slopeOut.point - transform.position;
-            }
-        }
-
-        if (collision.contacts.Length == 0 && !slopingDown)
+        if (collision.contacts.Length == 0)
         {
             grounded = false;
             jumpReady = false;

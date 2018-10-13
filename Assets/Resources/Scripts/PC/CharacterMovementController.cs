@@ -6,6 +6,7 @@ public class CharacterMovementController : MonoBehaviour {
 
     public float moveSpeed;
     public float deadZone;
+    private bool isMoving;
     // private int collisionMask = 1 << 10;
     // private float currentSpeed;
 
@@ -13,6 +14,8 @@ public class CharacterMovementController : MonoBehaviour {
     private CharacterCombatController combat;
     public Rigidbody rBody;
     public GravityController gravity;
+
+    private Vector3 horizontalTranslation;
 
 
     // Use this for initialization
@@ -22,12 +25,9 @@ public class CharacterMovementController : MonoBehaviour {
         combat = gameObject.GetComponent<CharacterCombatController>();
 
         mainCam = Camera.main;
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-
+        horizontalTranslation = Vector3.zero;
+        isMoving = false;
     }
 
     private void FixedUpdate()
@@ -39,7 +39,7 @@ public class CharacterMovementController : MonoBehaviour {
         rBody.angularVelocity = Vector3.zero;
 
         // multiple MovePosition calls didn't work, so accumulating vectors and calling it once is a good fix
-        Vector3 newPosition = transform.position;
+        Vector3 newPosition = Vector3.zero;
 
         if (!combat.IsAttacking())
         {
@@ -48,12 +48,19 @@ public class CharacterMovementController : MonoBehaviour {
 
             if (Mathf.Abs(Input.GetAxis("Vertical")) > deadZone || Mathf.Abs(Input.GetAxis("Horizontal")) > deadZone)
             {
+                isMoving = true;
                 newPosition += WalkInput();
             }
+            else
+            {
+                isMoving = false;
+            }
         }
+
+        horizontalTranslation = newPosition; // add the position here as gravity controls all vertical movement
         newPosition += gravity.GetVertTranslation();
 
-        rBody.MovePosition(newPosition);
+        rBody.MovePosition(newPosition + transform.position);
     }
 
     private Vector3 WalkInput()
@@ -88,5 +95,13 @@ public class CharacterMovementController : MonoBehaviour {
     public Vector3 SendPosition()
     {
         return transform.position;
+    }
+    public Vector3 SendHorizontalTranslation()
+    {
+        return horizontalTranslation;
+    }
+    public bool SendIsMoving()
+    {
+        return isMoving;
     }
 }
