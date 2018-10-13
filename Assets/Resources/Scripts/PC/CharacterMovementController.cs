@@ -58,6 +58,8 @@ public class CharacterMovementController : MonoBehaviour {
         }
 
         horizontalTranslation = newPosition; // add the position here as gravity controls all vertical movement
+
+        newPosition = gravity.ProjectTranslation(newPosition);
         newPosition += gravity.GetVertTranslation();
 
         rBody.MovePosition(newPosition + transform.position);

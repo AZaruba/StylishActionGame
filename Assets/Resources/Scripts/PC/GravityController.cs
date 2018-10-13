@@ -12,6 +12,7 @@ public class GravityController : MonoBehaviour {
     private bool jumpReady;
 
     private Vector3 verticalTranslation;
+    private Vector3 projectedVector;
 
     public Collider objectCollider;
     private Vector3 slopeOffset; // position offset by collider size
@@ -37,15 +38,6 @@ public class GravityController : MonoBehaviour {
             verticalTranslation = Vector3.zero;
             if (!jumpReady)
                 jumpReady = true;
-
-            // put slope calculations here, broken now
-            if (manager.SharePlayerMoving())
-            {
-                if (Physics.Raycast(transform.position + slopeOffset, Vector3.down, out slopeOut, 1.0f))
-                {
-                    verticalTranslation.y = slopeOut.point.y - transform.position.y;
-                }
-            }
         }
 
         else
@@ -58,9 +50,19 @@ public class GravityController : MonoBehaviour {
                 {
                     verticalTranslation.y = terminalVelocity * -1;
                 }
-                    
             }
         }
+    }
+
+    public Vector3 ProjectTranslation(Vector3 translationIn)
+    {
+        Vector3 translationOut = translationIn;
+        if (Physics.Raycast(transform.position + slopeOffset, Vector3.down, out slopeOut, 0.1f))
+        {
+            float mag = translationIn.magnitude;
+            translationOut = Vector3.ProjectOnPlane(translationIn, slopeOut.normal).normalized * mag;
+        }
+        return translationOut;
     }
 
     private void OnCollisionEnter(Collision collision)
