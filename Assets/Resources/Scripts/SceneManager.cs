@@ -7,11 +7,9 @@ public class SceneManager : MonoBehaviour {
     List<IEnemy> enemies;
     CharacterMovementController playerCharacter;
 
-    private Vector3 playerPosition;
-    private Vector3 playerTrans;
-    private bool playerMove;
-
     public Transform sphereEnemy;
+
+    private bool paused;
 
 	// Use this for initialization
 	void Start () {
@@ -19,30 +17,56 @@ public class SceneManager : MonoBehaviour {
         Instantiate(sphereEnemy, new Vector3(3, 1, 3), Quaternion.identity);
         Instantiate(sphereEnemy, new Vector3(-3, 1, 3), Quaternion.identity); // disabling while we fix slopes
 
-        playerPosition = playerCharacter.SendPosition();
-        playerMove = false;
-        playerTrans = Vector3.zero;
+        // StationarySphere[] spheres = FindObjectsOfType<StationarySphere>();
 
-        StationarySphere[] spheres = FindObjectsOfType<StationarySphere>();
+        paused = false;
 	}
 	
 	// Update is called once per frame
-	void FixedUpdate () {
-        playerPosition = playerCharacter.SendPosition();
-        playerTrans = playerCharacter.SendHorizontalTranslation();
-        playerMove = playerCharacter.SendIsMoving();
+	void Update () {
+        if (Input.GetKeyDown(KeyCode.Joystick1Button7))
+            TogglePause();
 	}
+
+    IEnumerator Pause()
+    {
+        paused = true;
+        Time.timeScale = 0;
+        while(true)
+        {
+            if (Input.GetKeyDown(KeyCode.Joystick1Button7))
+            {
+                paused = false;
+                Time.timeScale = 1;
+                yield break;
+            }
+        }
+    }
+
+    public void TogglePause()
+    {
+        if (paused)
+        {
+            Time.timeScale = 1;
+            paused = false;
+        }
+        else
+        {
+            Time.timeScale = 0;
+            paused = true;
+        }
+    }
 
     public Vector3 SharePlayerPosition()
     {
-        return playerPosition;
+        return playerCharacter.SendPosition();
     }
     public Vector3 SharePlayerTranslation()
     {
-        return playerTrans;
+        return playerCharacter.SendHorizontalTranslation();
     }
     public bool SharePlayerMoving()
     {
-        return playerMove;
+        return playerCharacter.SendIsMoving();
     }
 }

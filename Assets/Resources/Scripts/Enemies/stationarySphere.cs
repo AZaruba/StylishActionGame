@@ -36,13 +36,11 @@ public class StationarySphere : MonoBehaviour, IEnemy {
         // isGettingHit = true;
 
         LoadHitTexture(); // TODO remove
-        Debug.Log("HIT!");
         StartCoroutine(Stun(1.0f));
 
         health -= damage;
         if (health <= 0)
         {
-            Debug.Log("Defeated.");
             this.OnDefeat();
         }
 
