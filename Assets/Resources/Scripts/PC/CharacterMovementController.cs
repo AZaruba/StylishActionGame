@@ -43,7 +43,7 @@ public class CharacterMovementController : MonoBehaviour {
 
         if (!combat.IsAttacking())
         {
-            if (Input.GetKeyDown(CharacterEnum.Controls.Jump))
+            if (Input.GetKeyDown(Controls.Jump))
                 gravity.StartJump();
 
             if (Mathf.Abs(Input.GetAxis("Vertical")) > deadZone || Mathf.Abs(Input.GetAxis("Horizontal")) > deadZone)

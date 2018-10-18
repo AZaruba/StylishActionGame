@@ -25,8 +25,8 @@ public class Weapon : MonoBehaviour {
         attacks = new List<CharacterEnum.Attack>();
         currentAttack = null;
 
-        InitializeAttack(0.75f, 0.25f, 10, CharacterEnum.Controls.AttackOne);
-        InitializeAttack(1.0f, 0.25f, 15, CharacterEnum.Controls.AttackOne);
+        InitializeAttack(0.75f, 0.25f, 10, Controls.Attack);
+        InitializeAttack(1.0f, 0.25f, 15, Controls.Attack);
         attacks[0].LinkAttacks(attacks[1]);
     }
 

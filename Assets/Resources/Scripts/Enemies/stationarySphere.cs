@@ -73,6 +73,11 @@ public class StationarySphere : MonoBehaviour, IEnemy {
         Destroy(gameObject);
     }
 
+    public void OnPlayerDefeated()
+    {
+        // far future goal: animations here
+        moveSpeed = 0;
+    }
     public Vector3 SendPosition()
     {
         return transform.position;

@@ -12,7 +12,7 @@ public class CharacterCombatController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-        if (Input.GetKeyDown(KeyCode.JoystickButton2) && !currentWeapon.IsAttacking())
+        if (Input.GetKeyDown(Controls.Attack) && !currentWeapon.IsAttacking())
         {
             currentWeapon.StartAttack();
         }

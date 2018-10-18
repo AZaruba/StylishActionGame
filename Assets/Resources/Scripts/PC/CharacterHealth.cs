@@ -29,6 +29,6 @@ public class CharacterHealth : MonoBehaviour {
 
     void OnDefeat()
     {
-        Destroy(gameObject);
+        gameObject.SetActive(false);
     }
 }

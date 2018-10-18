@@ -47,12 +47,4 @@ public class CharacterEnum : MonoBehaviour {
         Kick,
         Taunt
     }
-
-    public class Controls
-    {
-        public const KeyCode Jump = KeyCode.JoystickButton0;
-        public const KeyCode AttackOne = KeyCode.JoystickButton2;
-        public const KeyCode AttackTwo = KeyCode.JoystickButton3;
-    }
-
 }

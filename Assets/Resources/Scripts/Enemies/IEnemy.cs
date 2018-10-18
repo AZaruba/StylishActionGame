@@ -10,6 +10,7 @@ public interface IEnemy {
     void GetHit(int damage);
     void ResetHit();
     void OnDefeat();
+    void OnPlayerDefeated();
 
     Vector3 SendPosition();
 }

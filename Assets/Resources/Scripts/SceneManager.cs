@@ -20,10 +20,24 @@ public class SceneManager : MonoBehaviour {
         Instantiate(sphereEnemy, new Vector3(3, 1, 3), Quaternion.identity);
         Instantiate(sphereEnemy, new Vector3(-3, 1, 3), Quaternion.identity); // disabling while we fix slopes
 
-        // StationarySphere[] spheres = FindObjectsOfType<StationarySphere>();
+        enemies = new List<IEnemy>();
+        StationarySphere[] spheres = FindObjectsOfType<StationarySphere>();
+        for (int x = 0; x < spheres.Length; x++)
+        {
+            enemies.Add(spheres[x]);
+        }
 
         paused = false;
+
+        SetPlayerControls(); // this might need to go in some sort of Options class
 	}
+
+    void SetPlayerControls()
+    {
+        Controls.SetAttack(KeyCode.JoystickButton2);
+        Controls.SetJump(KeyCode.JoystickButton0);
+        // Controls.SetSpecial(KeyCode.JoystickButton3);
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -76,5 +90,13 @@ public class SceneManager : MonoBehaviour {
     public void SendAttack(int damage)
     {
         playerHealth.Damage(damage);
+    }
+
+    public void OnDefeat()
+    {
+        for (int x = 0; x < enemies.Count; x++)
+        {
+            enemies[x].OnPlayerDefeated();
+        }
     }
 }
