@@ -18,6 +18,19 @@ public class CharacterCombatController : MonoBehaviour {
         }
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer != 9)
+            return;
+
+        if (!IsAttacking())
+        {
+            IEnemy attackingEnemy = collision.gameObject.GetComponent<IEnemy>();
+            if (attackingEnemy != null)
+                attackingEnemy.Attack();
+        }
+    }
+
     public bool IsAttacking()
     {
         return currentWeapon.IsAttacking();

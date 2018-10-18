@@ -142,6 +142,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sphereEnemy: {fileID: 4506423226497214, guid: 8a3a6813ff1165e4aa162fc330bf3f78,
     type: 2}
+  pcSpawn: {fileID: 0}
 --- !u!4 &204628026
 Transform:
   m_ObjectHideFlags: 0
@@ -768,6 +769,7 @@ GameObject:
   - component: {fileID: 1828475840}
   - component: {fileID: 1828475842}
   - component: {fileID: 1828475843}
+  - component: {fileID: 1828475844}
   m_Layer: 11
   m_Name: testChar
   m_TagString: Untagged
@@ -910,6 +912,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbfa0f30549296d4fb60905bc31a9c32, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1828475844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1828475834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc71874da8ab6ee4ca4755c30f72f8d0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 10
 --- !u!1 &1969143558
 GameObject:
   m_ObjectHideFlags: 0

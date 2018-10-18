@@ -6,14 +6,17 @@ public class SceneManager : MonoBehaviour {
 
     List<IEnemy> enemies;
     CharacterMovementController playerCharacter;
+    CharacterHealth playerHealth;
 
     public Transform sphereEnemy;
+    public Transform pcSpawn;
 
     private bool paused;
 
 	// Use this for initialization
 	void Start () {
         playerCharacter = FindObjectOfType<CharacterMovementController>(); // skipping Singleton pattern for multiplayer possibilities!
+        playerHealth = FindObjectOfType<CharacterHealth>();
         Instantiate(sphereEnemy, new Vector3(3, 1, 3), Quaternion.identity);
         Instantiate(sphereEnemy, new Vector3(-3, 1, 3), Quaternion.identity); // disabling while we fix slopes
 
@@ -68,5 +71,10 @@ public class SceneManager : MonoBehaviour {
     public bool SharePlayerMoving()
     {
         return playerCharacter.SendIsMoving();
+    }
+
+    public void SendAttack(int damage)
+    {
+        playerHealth.Damage(damage);
     }
 }

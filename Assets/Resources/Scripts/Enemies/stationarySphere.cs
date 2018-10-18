@@ -7,7 +7,7 @@ public class StationarySphere : MonoBehaviour, IEnemy {
     private int health;
 
     private bool isGettingHit;
-    // public int attackDamage;
+    public int attackDamage;
     public float moveSpeed;
 
     private Rigidbody rBody;
@@ -52,11 +52,10 @@ public class StationarySphere : MonoBehaviour, IEnemy {
     {
         // isGettingHit = false;
     }
-    
 
     public void Attack()
     {
-        return;
+        manager.SendAttack(attackDamage);
     }
 
     public Vector3 CalculateMovement()
