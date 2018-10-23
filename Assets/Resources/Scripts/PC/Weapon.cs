@@ -6,8 +6,8 @@ public class Weapon : MonoBehaviour {
 
     private bool isAttacking;
     private bool hasLinked;
-    List<CharacterEnum.Attack> attacks;
-    CharacterEnum.Attack currentAttack;
+    List<Attack> attacks;
+    Attack currentAttack;
 
     public float debugAttackDistance;
     private Vector3 debugOriginalPosition;
@@ -22,7 +22,7 @@ public class Weapon : MonoBehaviour {
         isAttacking = false;
         hasLinked = false;
 
-        attacks = new List<CharacterEnum.Attack>();
+        attacks = new List<Attack>();
         currentAttack = null;
 
         InitializeAttack(0.75f, 0.25f, 10, Controls.Attack);
@@ -58,7 +58,7 @@ public class Weapon : MonoBehaviour {
 
     private void InitializeAttack(float aTime, float lTime, int aDamage, KeyCode key)
     {
-        attacks.Add(new CharacterEnum.Attack(aTime, lTime, aDamage, key));
+        attacks.Add(new Attack(aTime, lTime, aDamage, key));
     }
 
     public bool IsAttacking()
@@ -69,7 +69,7 @@ public class Weapon : MonoBehaviour {
     /* COROUTINES
      * Because attacks occur while the user performs some other input, we want them to go in their own coroutines.
      */
-    public IEnumerator Attack(CharacterEnum.Attack attack)
+    public IEnumerator Attack(Attack attack)
     {
         currentAttack = attack; // set attack BEFORE in case coroutine does not set isAttacking
         isAttacking = true;
@@ -98,7 +98,7 @@ public class Weapon : MonoBehaviour {
         yield return null;
     }
 
-    public IEnumerator LinkCombo(CharacterEnum.Attack nextAttack, float linkTime)
+    public IEnumerator LinkCombo(Attack nextAttack, float linkTime)
     {
         // short circuit: if we cannot follow up the current attack, just reset to one
         if (nextAttack == null)
@@ -215,4 +215,38 @@ public class Weapon : MonoBehaviour {
 
         gameObject.GetComponent<Renderer>().material.mainTexture = texture;
     }
+}
+
+public class Attack
+{
+    public Attack(float aTime, float lTime, int aDamage, KeyCode key)
+    {
+        this.attackTime = aTime;
+        this.linkTime = lTime;
+        this.damage = aDamage;
+        this.inputKey = key;
+
+        // xAxis = 0;
+        // yAxis = 0;
+    }
+
+    public void LinkAttacks(Attack next)
+    {
+        this.nextAttack = next;
+    }
+
+    // Timing data
+    public float attackTime;
+    public float linkTime;
+
+    // Combat data
+    public int damage;
+    public Attack nextAttack;
+
+    // Input data
+    public KeyCode inputKey;
+
+    // public float xAxis;
+    // public float yAxis;
+
 }

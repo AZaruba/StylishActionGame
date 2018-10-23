@@ -7,7 +7,7 @@ public static class ItemDictionary {
     private static readonly Dictionary<int, Item> itemLookup =
         new Dictionary<int, Item>
         {
-            { 0, new Item("Test Key", "Pickup Test Key") }
+            { 0, new Item("Test Key", "Pickup Test Key", 0) }
         };
 
     public static Item LookupItem(int id)
