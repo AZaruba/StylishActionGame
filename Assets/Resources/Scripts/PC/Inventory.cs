@@ -12,6 +12,27 @@ public class Inventory : MonoBehaviour {
 
     private void FixedUpdate()
     {
+        if (Input.GetKeyDown(Controls.Interact))
+        {
+            RaycastHit doorCheck;
+            if (Physics.SphereCast(transform.position, 2, Vector3.zero, out doorCheck, 1 << 13))
+            {
+                Door getDoor = doorCheck.collider.gameObject.GetComponent<Door>();
+                if (getDoor == null)
+                    return;
+
+                bool foundKey = false;
+                for (int x = 0; x < heldItems.Count; x++)
+                {
+                    foundKey = getDoor.OpenDoor(heldItems[x].GetId());
+                    if (foundKey)
+                    {
+                        getDoor.OpenAnimate();
+                        return;
+                    }
+                }
+            }
+        }
     }
 
     private void OnCollisionStay(Collision collision)

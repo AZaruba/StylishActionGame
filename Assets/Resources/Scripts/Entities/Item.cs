@@ -38,4 +38,9 @@ public class Item {
     {
         return itemDescr;
     }
+
+    public int GetId()
+    {
+        return itemId;
+    }
 }

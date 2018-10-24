@@ -16,14 +16,14 @@ public class Door : MonoBehaviour {
     {
         if (itemId == keyId)
         {
-            OpenAnimate();
+            // OpenAnimate();
             return true;
         }
         return false;
     }
 
-    private void OpenAnimate()
+    public void OpenAnimate()
     {
-
+        Destroy(gameObject); // currently just checking to see if door interactions work
     }
 }
