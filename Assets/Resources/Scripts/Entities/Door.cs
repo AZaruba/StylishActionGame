@@ -22,6 +22,7 @@ public class Door : MonoBehaviour {
         return false;
     }
 
+    // will be returned to private and called above when destroy is replaced by animations
     public void OpenAnimate()
     {
         Destroy(gameObject); // currently just checking to see if door interactions work

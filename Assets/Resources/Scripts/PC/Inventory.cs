@@ -14,20 +14,20 @@ public class Inventory : MonoBehaviour {
     {
         if (Input.GetKeyDown(Controls.Interact))
         {
-            RaycastHit doorCheck;
-            if (Physics.SphereCast(transform.position, 2, Vector3.zero, out doorCheck, 1 << 13))
+            Collider[] doors = Physics.OverlapSphere(transform.position, 2, 1 << 13);
+            foreach (Collider foundDoor in doors)
             {
-                Door getDoor = doorCheck.collider.gameObject.GetComponent<Door>();
-                if (getDoor == null)
+                Door connectedDoor = foundDoor.gameObject.GetComponent<Door>();
+                if (connectedDoor == null)
                     return;
 
                 bool foundKey = false;
                 for (int x = 0; x < heldItems.Count; x++)
                 {
-                    foundKey = getDoor.OpenDoor(heldItems[x].GetId());
+                    foundKey = connectedDoor.OpenDoor(heldItems[x].GetId());
                     if (foundKey)
                     {
-                        getDoor.OpenAnimate();
+                        connectedDoor.OpenAnimate();
                         return;
                     }
                 }
@@ -42,7 +42,7 @@ public class Inventory : MonoBehaviour {
             return;
         }
 
-        if (Input.GetKey(KeyCode.JoystickButton1))
+        if (Input.GetKey(Controls.Interact))
         {
             ItemTrigger it = collision.gameObject.GetComponent<ItemTrigger>();
             if (PickUpItem(it))

@@ -36,6 +36,7 @@ public class SceneManager : MonoBehaviour {
     {
         Controls.SetAttack(KeyCode.JoystickButton2);
         Controls.SetJump(KeyCode.JoystickButton0);
+        Controls.SetInteract(KeyCode.JoystickButton1);
         // Controls.SetSpecial(KeyCode.JoystickButton3);
     }
 	
