@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class MenuSelection : MonoBehaviour {
 
     public UnityEngine.UI.Text[] texts;
+    public UnityEngine.UI.Text creditText;
     public float deadZone;
 
     private int currentIndex;
@@ -16,6 +17,9 @@ public class MenuSelection : MonoBehaviour {
         currentIndex = 0;
         menuReady = true;
         UpdatePointerPosition();
+
+        if (creditText != null)
+            creditText.text = "";
 	}
 	
 	// Update is called once per frame
@@ -53,6 +57,8 @@ public class MenuSelection : MonoBehaviour {
                     SceneManager.LoadScene("SceneOne", LoadSceneMode.Single);
                     break;
                 case 1: // activate credits
+                    if (creditText != null)
+                        creditText.text = "All the things by:\nA.Zaruba";
                     break;
                 case 2: // exit game
                     Application.Quit();
@@ -65,7 +71,7 @@ public class MenuSelection : MonoBehaviour {
     {
         UnityEngine.UI.Text adjText = texts[currentIndex];
         Vector3 newPos = adjText.transform.position;
-        newPos.x -= 20;
+        newPos.x -= 2;
         transform.position = newPos;
     }
 
