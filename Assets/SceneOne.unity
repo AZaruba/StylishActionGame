@@ -211,7 +211,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 6fad6cef24a52b54fa97a1c669981672, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 22d97dc241fc4364ca8a77bcae5e61d3, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -237,6 +237,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   healthBarShader: {fileID: 2100000, guid: e014cb7ed4deca848975081598848a6a, type: 2}
+  alphaMin: 0.24
+  alphaMax: 0.76
 --- !u!1 &663025091
 GameObject:
   m_ObjectHideFlags: 0
@@ -291,7 +293,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 21300000, guid: 4f1e3bca1100a7a47ae8a35f6050eef6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: cc9f9e30519394b408fe0447aa2f6590, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

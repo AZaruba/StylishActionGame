@@ -26,7 +26,7 @@ public class CharacterHealth : MonoBehaviour {
     {
         health -= hitAmount;
 
-        healthBar.UpdateHealthBar(((float)maxHealth - (float)health) / (float)maxHealth);
+        healthBar.UpdateHealthBar(1 - (float)health / (float)maxHealth);
         if (health <= 0)
             OnDefeat();
     }
