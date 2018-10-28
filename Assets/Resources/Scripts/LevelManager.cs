@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SceneManager : MonoBehaviour {
+public class LevelManager : MonoBehaviour {
 
     List<IEnemy> enemies;
     CharacterMovementController playerCharacter;
@@ -44,6 +44,9 @@ public class SceneManager : MonoBehaviour {
 	void Update () {
         if (Input.GetKeyDown(KeyCode.Joystick1Button7))
             TogglePause();
+
+        if (Input.GetKeyDown(KeyCode.Joystick1Button6))
+            Application.Quit(); // safety, allows the game to be ended at any time
 	}
 
     IEnumerator Pause()
@@ -57,6 +60,10 @@ public class SceneManager : MonoBehaviour {
                 paused = false;
                 Time.timeScale = 1;
                 yield break;
+            }
+            if (Input.GetKeyDown(KeyCode.Joystick1Button6))
+            {
+                Application.Quit();
             }
         }
     }

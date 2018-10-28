@@ -18,7 +18,7 @@ public class GravityController : MonoBehaviour {
     private Vector3 slopeOffset; // position offset by collider size
     private RaycastHit slopeOut;
 
-    // private SceneManager manager;
+    // private LevelManager manager;
 
     // Use this for initialization
     void Start () {
@@ -28,7 +28,7 @@ public class GravityController : MonoBehaviour {
 
         slopeOffset = Vector3.down * objectCollider.bounds.size.y / 2;
 
-        // manager = FindObjectOfType<SceneManager>(); // replace with singleton for scene manager
+        // manager = FindObjectOfType<LevelManager>(); // replace with singleton for scene manager
     }
 
     private void FixedUpdate()

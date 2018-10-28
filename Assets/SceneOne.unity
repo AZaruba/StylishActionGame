@@ -137,7 +137,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 204628024}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 94a5918e6955fd348a322273de40ec77, type: 3}
+  m_Script: {fileID: 11500000, guid: f148dbf919bc6344b9eeab5d5b155407, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   sphereEnemy: {fileID: 4506423226497214, guid: 8a3a6813ff1165e4aa162fc330bf3f78,
@@ -920,7 +920,7 @@ MeshRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_Materials:
-  - {fileID: 2100000, guid: ae2094febaa1ad84d88bc1fa0b4b9cde, type: 2}
+  - {fileID: 2100000, guid: d82420299fc39534287b5af3617a61ca, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1091,7 +1091,7 @@ MeshRenderer:
   m_GameObject: {fileID: 1828475834}
   m_Enabled: 1
   m_CastShadows: 1
-  m_ReceiveShadows: 1
+  m_ReceiveShadows: 0
   m_DynamicOccludee: 1
   m_MotionVectors: 1
   m_LightProbeUsage: 0

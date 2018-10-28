@@ -11,7 +11,7 @@ public class StationarySphere : MonoBehaviour, IEnemy {
     public float moveSpeed;
 
     private Rigidbody rBody;
-    private SceneManager manager;
+    private LevelManager manager;
 
     // Use this for initialization
     void Start () {
@@ -19,7 +19,7 @@ public class StationarySphere : MonoBehaviour, IEnemy {
         // isGettingHit = false;
 
         rBody = gameObject.GetComponent<Rigidbody>();
-        manager = FindObjectOfType<SceneManager>(); // replace with singleton for scene manager
+        manager = FindObjectOfType<LevelManager>(); // replace with singleton for scene manager
 	}
 	
 	void FixedUpdate () {

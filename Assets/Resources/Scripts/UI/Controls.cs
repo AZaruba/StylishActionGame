@@ -10,6 +10,9 @@ public static class Controls {
     public static KeyCode Interact;
     public static KeyCode Dash;
 
+    // menu controls
+    public static KeyCode Confirm = KeyCode.JoystickButton0;
+
     public static void SetJump(KeyCode kc)
     {
         Jump = kc;
