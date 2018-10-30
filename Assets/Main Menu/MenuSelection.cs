@@ -54,7 +54,7 @@ public class MenuSelection : MonoBehaviour {
             switch(currentIndex)
             {
                 case 0: // start game
-                    SceneManager.LoadScene("SceneOne", LoadSceneMode.Single);
+                    StartGame();
                     break;
                 case 1: // activate credits
                     if (creditText != null)
@@ -77,6 +77,6 @@ public class MenuSelection : MonoBehaviour {
 
     private void StartGame()
     {
-
+        SceneManager.LoadScene("SceneOne", LoadSceneMode.Single);
     }
 }
