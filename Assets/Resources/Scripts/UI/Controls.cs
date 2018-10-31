@@ -10,6 +10,8 @@ public static class Controls {
     public static KeyCode Interact;
     public static KeyCode Dash;
 
+    public static float deadZone;
+
     // menu controls
     public static KeyCode Confirm = KeyCode.JoystickButton0;
 
@@ -36,5 +38,10 @@ public static class Controls {
     public static void SetDash(KeyCode kc)
     {
         Dash = kc;
+    }
+
+    public static void SetDeadzone(float dz)
+    {
+        deadZone = dz;
     }
 }

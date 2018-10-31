@@ -5,7 +5,6 @@ using UnityEngine;
 public class CharacterMovementController : MonoBehaviour {
 
     public float moveSpeed;
-    public float deadZone;
     private bool isMoving;
     // private int collisionMask = 1 << 10;
     // private float currentSpeed;
@@ -46,7 +45,7 @@ public class CharacterMovementController : MonoBehaviour {
             if (Input.GetKeyDown(Controls.Jump))
                 gravity.StartJump();
 
-            if (Mathf.Abs(Input.GetAxis("Vertical")) > deadZone || Mathf.Abs(Input.GetAxis("Horizontal")) > deadZone)
+            if (Mathf.Abs(Input.GetAxis("Vertical")) > Controls.deadZone || Mathf.Abs(Input.GetAxis("Horizontal")) > Controls.deadZone)
             {
                 isMoving = true;
                 newPosition += WalkInput();

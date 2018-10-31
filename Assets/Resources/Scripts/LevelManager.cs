@@ -37,6 +37,7 @@ public class LevelManager : MonoBehaviour {
         Controls.SetAttack(KeyCode.JoystickButton2);
         Controls.SetJump(KeyCode.JoystickButton0);
         Controls.SetInteract(KeyCode.JoystickButton1);
+        Controls.SetDeadzone(0.5f);
         // Controls.SetSpecial(KeyCode.JoystickButton3);
     }
 	
