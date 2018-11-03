@@ -23,13 +23,13 @@ public class CameraController : MonoBehaviour {
         }
 
         Vector3 playerPos = manager.SharePlayerPosition();
-        rBody.MovePosition(transform.position + manager.SharePlayerTranslation());
         rBody.transform.LookAt(playerPos);
 
         if (Mathf.Abs(Input.GetAxis("RHorizontal")) > Controls.deadZone)
         {
-            Debug.Log("aaaa");
-            rBody.MovePosition(Quaternion.AngleAxis(rotationSpeed * Input.GetAxis("RHorizontal") * Time.deltaTime * -1, Vector3.up) * (rBody.transform.position - playerPos) + playerPos);
+            float cameraSpeed = rotationSpeed * Input.GetAxis("RHorizontal");
+            rBody.transform.Translate(Vector3.right * Time.fixedDeltaTime * cameraSpeed);
         }
-	}
+        rBody.MovePosition(transform.position + manager.SharePlayerTranslation());
+    }
 }

@@ -17,8 +17,8 @@ public class LevelManager : MonoBehaviour {
 	void Start () {
         playerCharacter = FindObjectOfType<CharacterMovementController>(); // skipping Singleton pattern for multiplayer possibilities!
         playerHealth = FindObjectOfType<CharacterHealth>();
-        Instantiate(sphereEnemy, new Vector3(3, 1, 3), Quaternion.identity);
-        Instantiate(sphereEnemy, new Vector3(-3, 1, 3), Quaternion.identity); // disabling while we fix slopes
+        // Instantiate(sphereEnemy, new Vector3(3, 1, 3), Quaternion.identity);
+        // Instantiate(sphereEnemy, new Vector3(-3, 1, 3), Quaternion.identity); // disabling while we fix slopes
 
         enemies = new List<IEnemy>();
         StationarySphere[] spheres = FindObjectsOfType<StationarySphere>();
@@ -29,17 +29,8 @@ public class LevelManager : MonoBehaviour {
 
         paused = false;
 
-        SetPlayerControls(); // this might need to go in some sort of Options class
+        Controls.SetDefaultControls();
 	}
-
-    void SetPlayerControls()
-    {
-        Controls.SetAttack(KeyCode.JoystickButton2);
-        Controls.SetJump(KeyCode.JoystickButton0);
-        Controls.SetInteract(KeyCode.JoystickButton1);
-        Controls.SetDeadzone(0.5f);
-        // Controls.SetSpecial(KeyCode.JoystickButton3);
-    }
 	
 	// Update is called once per frame
 	void Update () {

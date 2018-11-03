@@ -15,6 +15,46 @@ public static class Controls {
     // menu controls
     public static KeyCode Confirm = KeyCode.JoystickButton0;
 
+    public static void SetDefaultControls()
+    {
+        switch (Application.platform)
+        {
+            case RuntimePlatform.WindowsPlayer:
+                Controls.SetAttack(KeyCode.JoystickButton2);
+                Controls.SetJump(KeyCode.JoystickButton0);
+                Controls.SetInteract(KeyCode.JoystickButton1);
+                break;
+            case RuntimePlatform.WindowsEditor:
+                Controls.SetAttack(KeyCode.JoystickButton2);
+                Controls.SetJump(KeyCode.JoystickButton0);
+                Controls.SetInteract(KeyCode.JoystickButton1);
+                break;
+            case RuntimePlatform.OSXPlayer:
+                Controls.SetAttack(KeyCode.JoystickButton18);
+                Controls.SetJump(KeyCode.JoystickButton16);
+                Controls.SetInteract(KeyCode.JoystickButton17);
+                break;
+            case RuntimePlatform.OSXEditor:
+                Controls.SetAttack(KeyCode.JoystickButton18);
+                Controls.SetJump(KeyCode.JoystickButton16);
+                Controls.SetInteract(KeyCode.JoystickButton17);
+                break;
+            case RuntimePlatform.LinuxPlayer:
+                Controls.SetAttack(KeyCode.JoystickButton2);
+                Controls.SetJump(KeyCode.JoystickButton0);
+                Controls.SetInteract(KeyCode.JoystickButton1);
+                break;
+            case RuntimePlatform.LinuxEditor:
+                Controls.SetAttack(KeyCode.JoystickButton2);
+                Controls.SetJump(KeyCode.JoystickButton0);
+                Controls.SetInteract(KeyCode.JoystickButton1);
+                break;
+        }
+        
+        Controls.SetDeadzone(0.5f);
+        // Controls.SetSpecial(KeyCode.JoystickButton3);
+    }
+
     public static void SetJump(KeyCode kc)
     {
         Jump = kc;
