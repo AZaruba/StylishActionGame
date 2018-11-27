@@ -30,13 +30,13 @@ public static class Controls {
                 Controls.SetInteract(KeyCode.JoystickButton1);
                 break;
             case RuntimePlatform.OSXPlayer:
-                Controls.SetAttack(KeyCode.JoystickButton18);
-                Controls.SetJump(KeyCode.JoystickButton16);
+			    Controls.SetAttack(KeyCode.JoystickButton15); // DS3 buttons
+                Controls.SetJump(KeyCode.JoystickButton14);
                 Controls.SetInteract(KeyCode.JoystickButton17);
                 break;
             case RuntimePlatform.OSXEditor:
-                Controls.SetAttack(KeyCode.JoystickButton18);
-                Controls.SetJump(KeyCode.JoystickButton16);
+                Controls.SetAttack(KeyCode.JoystickButton15); // DS3 buttons
+                Controls.SetJump(KeyCode.JoystickButton14);
                 Controls.SetInteract(KeyCode.JoystickButton17);
                 break;
             case RuntimePlatform.LinuxPlayer:
