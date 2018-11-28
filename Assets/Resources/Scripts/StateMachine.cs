@@ -16,13 +16,27 @@ public class StateMachine {
 	private State currentState;
 	private State defaultState;
 	public static State errorState;
+    private List<State> states;
 
 	public StateMachine()
 	{
+        states = new List<State>();
 		CreateErrorState();
 		defaultState = new State();
 		currentState = defaultState;
+        states.Add(defaultState);
+
 	}
+
+    public StateMachine(StateId defStateId)
+    {
+        states = new List<State>();
+        State defState = new State(defStateId);
+        CreateErrorState();
+        defaultState = defState;
+        currentState = defaultState;
+        states.Add(defaultState);
+    }
 
 	public bool CommandMachine(Command command)
 	{
@@ -34,10 +48,61 @@ public class StateMachine {
 		return false;
 	}
 
+    public bool LinkStates(StateId currentStateId, StateId nextStateId, Command command)
+    {
+        State currentState = FindState(currentStateId);
+        State nextState = FindState(nextStateId);
+        if (currentState == null || nextState == null)
+        {
+            return false; // function works iff both states exist
+        }
+
+        currentState.AddTransition(nextState, command);
+        return true;
+    }
+
+    // certain states might need toggling (such as moving and stopping), so this 
+    // overload allows the commands from one state to the next and back in a single function
+    public bool LinkStates(StateId currentStateId, StateId nextStateId, Command command, Command commandBack)
+    {
+        State currentState = FindState(currentStateId);
+        State nextState = FindState(nextStateId);
+        if (currentState == null || nextState == null)
+        {
+            return false; // function works iff both states exist
+        }
+
+        currentState.AddTransition(nextState, command);
+        nextState.AddTransition(currentState, commandBack);
+        return true;
+    }
+
+    public bool CheckCurrentState(StateId id)
+    {
+        return id == currentState.GetStateId();
+    }
+
 	public State GetCurrentState()
 	{
 		return currentState;
 	}
+
+    public void AddState(StateId id)
+    {
+        states.Add(new State(id));
+    }
+
+    public State FindState(StateId id)
+    {
+        for (int x = 0; x < states.Count; x++)
+        {
+            if (states[x].GetStateId() == id)
+            {
+                return states[x];
+            }
+        }
+        return null;
+    }
 
 	private void CreateErrorState()
 	{
@@ -53,7 +118,7 @@ public class State {
 	// default constructor is for error state
 	public State()
 	{
-		this.stateId = StateId.ErrorState;
+		this.stateId = StateId.ERROR_STATE;
 	}
 
 	public State(StateId stateId)
@@ -79,8 +144,13 @@ public class State {
 		return validStates[validCommands.IndexOf (command)];
 	}
 
+    public StateId GetStateId()
+    {
+        return stateId;
+    }
+
 	// adding functions
-	public void AddState(State newState, Command command)
+	public void AddTransition(State newState, Command command)
 	{
 		if (validCommands.Count != validStates.Count)
 		{
@@ -98,30 +168,31 @@ public class State {
  */ 
 public enum Command
 {
-	ErrorCommand = -1,
-	Stop = 0,
-	Move,
-	Jump,
-	Attack,
-	Interact,
-	GetHit,
-	Recover
+	ERROR_COMMAND = -1,
+	STOP = 0,
+	MOVE,
+	JUMP,
+    LAND,
+	ATTACK,
+	INTERACT,
+	GET_HIT,
+	RECOVER
 }
 /* A list of all states
  * 
  */ 
 public enum StateId
 {
-	ErrorState = -1, // corresponds to StateMachine.errorState ONLY
-	Idle = 0,
-	Moving,
-	InAir,
-	Attacking,
-	Interacting,
-	MovingInAir,
-	AttackingInAir,
-	InteractingInAir,
-	Damaged,
-	Recovering,
-	Defeated
+	ERROR_STATE = -1, // corresponds to StateMachine.errorState ONLY
+	IDLE = 0,
+	MOVING,
+	IN_AIR,
+	ATTACKING,
+	INTERACTING,
+	MOVING_IN_AIR,
+	ATTACKING_IN_AIR,
+	INTERACTING_IN_AIR,
+	DAMAGED,
+	RECOVERING,
+	DEFEATED
 }
