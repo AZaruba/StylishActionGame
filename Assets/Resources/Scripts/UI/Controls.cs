@@ -11,6 +11,7 @@ public static class Controls {
     public static KeyCode Dash;
 
     public static float deadZone;
+    public static float neutralStickPosition = -1000;
 
     // menu controls
     public static KeyCode Confirm = KeyCode.JoystickButton0;

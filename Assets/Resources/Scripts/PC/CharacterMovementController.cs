@@ -5,7 +5,6 @@ using UnityEngine;
 public class CharacterMovementController : MonoBehaviour {
 
     public float moveSpeed;
-    private bool isMoving;
     // private int collisionMask = 1 << 10;
     // private float currentSpeed;
 
@@ -26,10 +25,9 @@ public class CharacterMovementController : MonoBehaviour {
         mainCam = Camera.main;
 
         horizontalTranslation = Vector3.zero;
-        isMoving = false;
     }
 
-    private void FixedUpdate()
+    public void HorizontalMovement(float stickDegree)
     {
         /* I don't want materials-based physics, setting velocities to zero allows the
          * Rigidbody to prevent clipping while not causing any unwanted forces.
@@ -45,14 +43,9 @@ public class CharacterMovementController : MonoBehaviour {
             if (Input.GetKeyDown(Controls.Jump))
                 gravity.StartJump();
 
-            if (Mathf.Abs(Input.GetAxis("Vertical")) > Controls.deadZone || Mathf.Abs(Input.GetAxis("Horizontal")) > Controls.deadZone)
+            if (stickDegree != Controls.neutralStickPosition)
             {
-                isMoving = true;
-                newPosition += WalkInput();
-            }
-            else
-            {
-                isMoving = false;
+                newPosition += WalkInput(stickDegree);
             }
         }
 
@@ -64,12 +57,11 @@ public class CharacterMovementController : MonoBehaviour {
         rBody.MovePosition(newPosition + transform.position);
     }
 
-    private Vector3 WalkInput()
+    private Vector3 WalkInput(float rotationDegree = 0.0f)
     {
         Vector3 direction = new Vector3();
         Vector3 camDirection = GetCameraOrientation();
 
-        float rotationDegree = Mathf.Atan2(Input.GetAxis("Vertical"), -1 * Input.GetAxis("Horizontal"));
         direction.x = -1 * camDirection.z * Mathf.Cos(rotationDegree) + camDirection.x * Mathf.Sin(rotationDegree);
         direction.z = camDirection.z * Mathf.Sin(rotationDegree) + camDirection.x * Mathf.Cos(rotationDegree);
 
@@ -100,9 +92,5 @@ public class CharacterMovementController : MonoBehaviour {
     public Vector3 SendHorizontalTranslation()
     {
         return horizontalTranslation;
-    }
-    public bool SendIsMoving()
-    {
-        return isMoving;
     }
 }

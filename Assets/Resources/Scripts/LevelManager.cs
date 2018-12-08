@@ -82,10 +82,6 @@ public class LevelManager : MonoBehaviour {
     {
         return playerCharacter.SendHorizontalTranslation();
     }
-    public bool SharePlayerMoving()
-    {
-        return playerCharacter.SendIsMoving();
-    }
 
     public void SendAttack(int damage)
     {

@@ -586,7 +586,6 @@ GameObject:
   - component: {fileID: 1214829617}
   - component: {fileID: 1214829616}
   - component: {fileID: 1214829620}
-  - component: {fileID: 1214829621}
   - component: {fileID: 1214829622}
   m_Layer: 0
   m_Name: Main Camera
@@ -673,21 +672,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &1214829621
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1214829615}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13e5d7fed05e1594284be9a175da49b2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  manager: {fileID: 204628025}
-  playerCharacter: {fileID: 1828475834}
-  rBody: {fileID: 1214829620}
-  rotationSpeed: 10
 --- !u!65 &1214829622
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1123,6 +1107,7 @@ GameObject:
   - component: {fileID: 1828475842}
   - component: {fileID: 1828475843}
   - component: {fileID: 1828475844}
+  - component: {fileID: 1828475845}
   m_Layer: 11
   m_Name: testChar
   m_TagString: Untagged
@@ -1277,6 +1262,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 10
   healthBar: {fileID: 0}
+--- !u!114 &1828475845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1828475834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08c9d6aa86311ae4cb96fef6884a5aa4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  movementController: {fileID: 1828475840}
+  gravityController: {fileID: 1828475842}
 --- !u!1 &1969143558
 GameObject:
   m_ObjectHideFlags: 0

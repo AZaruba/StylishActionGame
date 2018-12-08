@@ -86,6 +86,10 @@ public class StateMachine {
 	{
 		return currentState;
 	}
+    public StateId GetCurrentStateId()
+    {
+        return currentState.GetStateId();
+    }
 
     public void AddState(StateId id)
     {
@@ -118,12 +122,16 @@ public class State {
 	// default constructor is for error state
 	public State()
 	{
+        validCommands = new List<Command>();
+        validStates = new List<State>();
 		this.stateId = StateId.ERROR_STATE;
 	}
 
 	public State(StateId stateId)
 	{
-		this.stateId = stateId;
+        validCommands = new List<Command>();
+        validStates = new List<State>();
+        this.stateId = stateId;
 	}
 
 	public bool CheckValidCommand(Command command)
