@@ -38,17 +38,18 @@ public class StateMachine {
         states.Add(defaultState);
     }
 
-	public bool CommandMachine(Command command)
+	public float CommandMachine(CommandId command)
 	{
 		if (currentState.CheckValidCommand(command))
 		{
+			float commandVal = currentState.GetCommandValue(command);
 			currentState = currentState.GetNextState(command);
-			return true;
+			return commandVal;
 		}
-		return false;
+		return Mathf.NegativeInfinity;
 	}
 
-    public bool LinkStates(StateId currentStateId, StateId nextStateId, Command command)
+    public bool LinkStates(StateId currentStateId, StateId nextStateId, CommandId command)
     {
         State currentState = FindState(currentStateId);
         State nextState = FindState(nextStateId);
@@ -61,9 +62,22 @@ public class StateMachine {
         return true;
     }
 
+	public bool LinkStates(StateId currentStateId, StateId nextStateId, CommandId command, float comValue)
+	{
+		State currentState = FindState(currentStateId);
+		State nextState = FindState(nextStateId);
+		if (currentState == null || nextState == null)
+		{
+			return false; // function works iff both states exist
+		}
+
+		currentState.AddTransition(nextState, command, comValue);
+		return true;
+	}
+
     // certain states might need toggling (such as moving and stopping), so this 
     // overload allows the commands from one state to the next and back in a single function
-    public bool LinkStates(StateId currentStateId, StateId nextStateId, Command command, Command commandBack)
+    public bool LinkStates(StateId currentStateId, StateId nextStateId, CommandId command, CommandId commandBack)
     {
         State currentState = FindState(currentStateId);
         State nextState = FindState(nextStateId);
@@ -134,22 +148,41 @@ public class State {
         this.stateId = stateId;
 	}
 
-	public bool CheckValidCommand(Command command)
+	public bool CheckValidCommand(CommandId command)
 	{
 		for (int x = 0; x < validCommands.Count; x++) // is foreach better?
 		{
-			if (command == validCommands [x])
+			if (command == validCommands[x].GetCommandId())
 				return true;
 		}
 		return false;
  	}
 
-	public State GetNextState(Command command)
+	public int GetCommandIndex(CommandId command)
 	{
-		if (!validCommands.Contains (command))
+		for (int x = 0; x < validCommands.Count; x++) // is foreach better?
+		{
+			if (command == validCommands[x].GetCommandId())
+				return x;
+		}
+		return -1;
+	}
+	public float GetCommandValue(CommandId command)
+	{
+		for (int x = 0; x < validCommands.Count; x++) // is foreach better?
+		{
+			if (command == validCommands[x].GetCommandId())
+				return validCommands[x].GetCommandValue();
+		}
+		return Mathf.NegativeInfinity;
+	}
+
+	public State GetNextState(CommandId command)
+	{
+		if (!CheckValidCommand(command))
 			return StateMachine.errorState;
 		
-		return validStates[validCommands.IndexOf (command)];
+		return validStates[GetCommandIndex(command)];
 	}
 
     public StateId GetStateId()
@@ -158,15 +191,59 @@ public class State {
     }
 
 	// adding functions
-	public void AddTransition(State newState, Command command)
+	public void AddTransition(State newState, CommandId commandId)
 	{
 		if (validCommands.Count != validStates.Count)
 		{
 			return; // how should we handle a potential mismatch in state/command sizes?
 		}
-		validCommands.Add(command);
+		validCommands.Add(new Command(commandId));
 		validStates.Add(newState);
 	}
+
+	public void AddTransition(State newState, CommandId commandId, float commandValue)
+	{
+		if (validCommands.Count != validStates.Count)
+		{
+			return; // how should we handle a potential mismatch in state/command sizes?
+		}
+		validCommands.Add(new Command(commandId, commandValue));
+		validStates.Add(newState);
+	}
+}
+
+public class Command
+{
+	private CommandId commandId;
+	private float commandValue;
+
+	public Command()
+	{
+		commandId = CommandId.ERROR_COMMAND;
+		commandValue = Mathf.NegativeInfinity;
+	}
+
+	public Command(CommandId id)
+	{
+		commandId = id;
+		commandValue = Mathf.NegativeInfinity;
+	}
+
+	public Command(CommandId id, float value)
+	{
+		commandId = id;
+		commandValue = value;
+	}
+
+	public CommandId GetCommandId()
+	{
+		return commandId;
+	}
+	public float GetCommandValue()
+	{
+		return commandValue;
+	}
+
 }
 
 /* A list of all available commands for each entity in the game
@@ -174,7 +251,7 @@ public class State {
  * (for example, all characters might be able to move, but only
  * some may be able to jump)
  */ 
-public enum Command
+public enum CommandId
 {
 	ERROR_COMMAND = -1,
 	STOP = 0,

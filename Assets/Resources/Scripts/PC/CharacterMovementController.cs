@@ -40,9 +40,6 @@ public class CharacterMovementController : MonoBehaviour {
 
         if (!combat.IsAttacking())
         {
-            if (Input.GetKeyDown(Controls.Jump))
-                gravity.StartJump();
-
             if (stickDegree != Controls.neutralStickPosition)
             {
                 newPosition += WalkInput(stickDegree);

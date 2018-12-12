@@ -34,10 +34,12 @@ public class CharacterMasterController : MonoBehaviour {
             }
             case (StateId.IN_AIR):
             {
+				gravityController.VerticalMovement();
                 break;
             }
             case (StateId.MOVING_IN_AIR):
             {
+				gravityController.VerticalMovement();
                 movementController.HorizontalMovement(GetMovementStickPosition());
                 break;
             }
@@ -55,10 +57,13 @@ public class CharacterMasterController : MonoBehaviour {
         stateMach.AddState(StateId.MOVING_IN_AIR);
 
         // create state connections
-        stateMach.LinkStates(StateId.IDLE, StateId.MOVING, Command.MOVE, Command.STOP);
-        stateMach.LinkStates(StateId.IDLE, StateId.IN_AIR, Command.JUMP, Command.LAND);
-        stateMach.LinkStates(StateId.IN_AIR, StateId.MOVING_IN_AIR, Command.MOVE, Command.STOP);
-        stateMach.LinkStates(StateId.MOVING, StateId.MOVING_IN_AIR, Command.JUMP, Command.LAND);
+        stateMach.LinkStates(StateId.IDLE, StateId.MOVING, CommandId.MOVE, CommandId.STOP);
+		stateMach.LinkStates(StateId.IDLE, StateId.IN_AIR, CommandId.JUMP, gravityController.jumpVelocity);
+		stateMach.LinkStates(StateId.IN_AIR, StateId.IDLE, CommandId.LAND);
+
+        stateMach.LinkStates(StateId.IN_AIR, StateId.MOVING_IN_AIR, CommandId.MOVE, CommandId.STOP);
+		stateMach.LinkStates(StateId.MOVING, StateId.MOVING_IN_AIR, CommandId.JUMP, gravityController.jumpVelocity);
+		stateMach.LinkStates(StateId.MOVING_IN_AIR, StateId.MOVING, CommandId.LAND);
     }
 
     private void UpdateStateMachine()
@@ -69,11 +74,12 @@ public class CharacterMasterController : MonoBehaviour {
             {
                 if (GetMovementStickPosition() != Controls.neutralStickPosition)
                 {
-                    stateMach.CommandMachine(Command.MOVE);
+                    stateMach.CommandMachine(CommandId.MOVE);
                 }
                 if (Input.GetKey(Controls.Jump))
                 {
-                    stateMach.CommandMachine(Command.JUMP);
+					float jumpVel = stateMach.CommandMachine(CommandId.JUMP);
+					gravityController.StartJump(jumpVel);
                 }
                 break;
             }
@@ -81,24 +87,26 @@ public class CharacterMasterController : MonoBehaviour {
             {
                 if (GetMovementStickPosition() == Controls.neutralStickPosition)
                 {
-                    stateMach.CommandMachine(Command.STOP);
+                    stateMach.CommandMachine(CommandId.STOP);
                 }
                 if (Input.GetKey(Controls.Jump))
                 {
-                    stateMach.CommandMachine(Command.JUMP);
+                    float jumpVel = stateMach.CommandMachine(CommandId.JUMP);
+					gravityController.StartJump(jumpVel);
                 }
+				// do a fall check then transition to IN AIR with velocity 0 
                 break;
             }
             case (StateId.IN_AIR):
             {
                 if (GetMovementStickPosition() != Controls.neutralStickPosition)
                 {
-                    stateMach.CommandMachine(Command.MOVE);
+                    stateMach.CommandMachine(CommandId.MOVE);
                 }
                 // figure out how to check if we land
-                if (false)
+				if (gravityController.IsGrounded())
                 {
-                    stateMach.CommandMachine(Command.LAND);
+                    stateMach.CommandMachine(CommandId.LAND);
                 }
                 break;
             }
@@ -106,11 +114,11 @@ public class CharacterMasterController : MonoBehaviour {
             {
                 if (GetMovementStickPosition() == Controls.neutralStickPosition)
                 {
-                    stateMach.CommandMachine(Command.STOP);
+                    stateMach.CommandMachine(CommandId.STOP);
                 }
-                if (false)
+				if (gravityController.IsGrounded())
                 {
-                    stateMach.CommandMachine(Command.LAND);
+                    stateMach.CommandMachine(CommandId.LAND);
                 }
                 break;
             }

@@ -31,7 +31,7 @@ public class GravityController : MonoBehaviour {
         // manager = FindObjectOfType<LevelManager>(); // replace with singleton for scene manager
     }
 
-    private void FixedUpdate()
+    public void VerticalMovement()
     {
         if (grounded)
         {
@@ -52,6 +52,7 @@ public class GravityController : MonoBehaviour {
                 }
             }
         }
+		// rBody.MovePosition(transform.position + verticalTranslation);
     }
 
     public Vector3 ProjectTranslation(Vector3 translationIn)
@@ -119,16 +120,20 @@ public class GravityController : MonoBehaviour {
     {
         return verticalTranslation;
     }
+	public bool IsGrounded()
+	{
+		return grounded;
+	}
 
     // allows jumping to be called by a variety of sources, not just a button press
     // enables code to be reused for non-player entities that might want to jump
-    public void StartJump()
+	public void StartJump(float jumpVel)
     {
         if (jumpReady)
         {
             jumpReady = false;
             grounded = false;
-            verticalTranslation.y = jumpVelocity * Time.deltaTime;
+            verticalTranslation.y = jumpVel * Time.deltaTime;
         }
     }
 }
