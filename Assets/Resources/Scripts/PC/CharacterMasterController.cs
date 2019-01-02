@@ -7,6 +7,8 @@ public class CharacterMasterController : MonoBehaviour {
     // eventually this class will call all other character controllers' FixedUpdate() in this FixedUpdate()
     public CharacterMovementController movementController;
     public GravityController gravityController;
+    public Rigidbody rBody;
+
     private StateMachine stateMach;
     private StateId currentStateId;
 
@@ -20,6 +22,12 @@ public class CharacterMasterController : MonoBehaviour {
         // in here we would check state and call the corresponding functions here, via a switch
         UpdateStateMachine();
 
+        /* I don't want materials-based physics, setting velocities to zero allows the
+         * Rigidbody to prevent clipping while not causing any unwanted forces.
+         */
+        rBody.velocity = Vector3.zero;
+        rBody.angularVelocity = Vector3.zero;
+
         switch (currentStateId)
         {
             case (StateId.IDLE):
@@ -29,18 +37,27 @@ public class CharacterMasterController : MonoBehaviour {
             }
             case (StateId.MOVING):
             {
-                movementController.HorizontalMovement(GetMovementStickPosition());
+                Vector3 newPosition = transform.position;
+                newPosition += movementController.HorizontalMovement(GetMovementStickPosition());
+
+                rBody.MovePosition(newPosition);
                 break;
             }
             case (StateId.IN_AIR):
             {
-				gravityController.VerticalMovement();
+                Vector3 newPosition = transform.position;
+                newPosition += gravityController.VerticalMovement();
+
+                rBody.MovePosition(newPosition);
                 break;
             }
             case (StateId.MOVING_IN_AIR):
             {
-				gravityController.VerticalMovement();
-                movementController.HorizontalMovement(GetMovementStickPosition());
+                Vector3 newPosition = transform.position;
+                newPosition += gravityController.VerticalMovement();
+                newPosition += movementController.HorizontalMovement(GetMovementStickPosition());
+
+                rBody.MovePosition(newPosition);
                 break;
             }
         }
@@ -57,12 +74,14 @@ public class CharacterMasterController : MonoBehaviour {
         stateMach.AddState(StateId.MOVING_IN_AIR);
 
         // create state connections
-        stateMach.LinkStates(StateId.IDLE, StateId.MOVING, CommandId.MOVE, CommandId.STOP);
+        stateMach.LinkStates(StateId.IDLE, StateId.MOVING, CommandId.MOVE, CommandId.STOP); // complicated, remove two way transition adding
 		stateMach.LinkStates(StateId.IDLE, StateId.IN_AIR, CommandId.JUMP, gravityController.jumpVelocity);
-		stateMach.LinkStates(StateId.IN_AIR, StateId.IDLE, CommandId.LAND);
+        stateMach.LinkStates(StateId.IDLE, StateId.IN_AIR, CommandId.FALL, 0.0f);
+        stateMach.LinkStates(StateId.IN_AIR, StateId.IDLE, CommandId.LAND);
 
         stateMach.LinkStates(StateId.IN_AIR, StateId.MOVING_IN_AIR, CommandId.MOVE, CommandId.STOP);
 		stateMach.LinkStates(StateId.MOVING, StateId.MOVING_IN_AIR, CommandId.JUMP, gravityController.jumpVelocity);
+        stateMach.LinkStates(StateId.MOVING, StateId.MOVING_IN_AIR, CommandId.FALL, 0.0f);
 		stateMach.LinkStates(StateId.MOVING_IN_AIR, StateId.MOVING, CommandId.LAND);
     }
 
@@ -81,6 +100,11 @@ public class CharacterMasterController : MonoBehaviour {
 					float jumpVel = stateMach.CommandMachine(CommandId.JUMP);
 					gravityController.StartJump(jumpVel);
                 }
+                if (!gravityController.IsGrounded())
+                {
+                    float jumpVel = stateMach.CommandMachine(CommandId.FALL);
+                    gravityController.StartJump(jumpVel);
+                }
                 break;
             }
             case (StateId.MOVING):
@@ -94,7 +118,11 @@ public class CharacterMasterController : MonoBehaviour {
                     float jumpVel = stateMach.CommandMachine(CommandId.JUMP);
 					gravityController.StartJump(jumpVel);
                 }
-				// do a fall check then transition to IN AIR with velocity 0 
+                if (!gravityController.IsGrounded())
+                {
+                    float jumpVel = stateMach.CommandMachine(CommandId.FALL);
+                    gravityController.StartJump(jumpVel);
+                }
                 break;
             }
             case (StateId.IN_AIR):
@@ -103,7 +131,6 @@ public class CharacterMasterController : MonoBehaviour {
                 {
                     stateMach.CommandMachine(CommandId.MOVE);
                 }
-                // figure out how to check if we land
 				if (gravityController.IsGrounded())
                 {
                     stateMach.CommandMachine(CommandId.LAND);
@@ -118,6 +145,7 @@ public class CharacterMasterController : MonoBehaviour {
                 }
 				if (gravityController.IsGrounded())
                 {
+                    Debug.Log("Womp moving");
                     stateMach.CommandMachine(CommandId.LAND);
                 }
                 break;

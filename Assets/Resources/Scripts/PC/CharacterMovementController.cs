@@ -27,14 +27,8 @@ public class CharacterMovementController : MonoBehaviour {
         horizontalTranslation = Vector3.zero;
     }
 
-    public void HorizontalMovement(float stickDegree)
+    public Vector3 HorizontalMovement(float stickDegree)
     {
-        /* I don't want materials-based physics, setting velocities to zero allows the
-         * Rigidbody to prevent clipping while not causing any unwanted forces.
-         */ 
-        rBody.velocity = Vector3.zero;
-        rBody.angularVelocity = Vector3.zero;
-
         // multiple MovePosition calls didn't work, so accumulating vectors and calling it once is a good fix
         Vector3 newPosition = Vector3.zero;
 
@@ -46,12 +40,11 @@ public class CharacterMovementController : MonoBehaviour {
             }
         }
 
-        horizontalTranslation = newPosition; // add the position here as gravity controls all vertical movement
+        horizontalTranslation = newPosition;
 
-        newPosition = gravity.ProjectTranslation(newPosition);
-        newPosition += gravity.GetVertTranslation();
+        newPosition = gravity.ProjectTranslation(newPosition); // move this vertical translation here to better compartmentalize?
 
-        rBody.MovePosition(newPosition + transform.position);
+        return newPosition;
     }
 
     private Vector3 WalkInput(float rotationDegree = 0.0f)

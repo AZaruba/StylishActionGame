@@ -257,6 +257,7 @@ public enum CommandId
 	STOP = 0,
 	MOVE,
 	JUMP,
+    FALL,
     LAND,
 	ATTACK,
 	INTERACT,

@@ -31,7 +31,7 @@ public class GravityController : MonoBehaviour {
         // manager = FindObjectOfType<LevelManager>(); // replace with singleton for scene manager
     }
 
-    public void VerticalMovement()
+    public Vector3 VerticalMovement()
     {
         if (grounded)
         {
@@ -52,6 +52,8 @@ public class GravityController : MonoBehaviour {
                 }
             }
         }
+
+        return verticalTranslation; 
 		// rBody.MovePosition(transform.position + verticalTranslation);
     }
 
