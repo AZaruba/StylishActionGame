@@ -5,10 +5,10 @@ using UnityEngine;
 public class CharacterMasterController : MonoBehaviour {
 
     // eventually this class will call all other character controllers' FixedUpdate() in this FixedUpdate()
-    public CharacterMovementController movementController;
-    public GravityController gravityController;
-    public CharacterCombatController combatController;
-    public Rigidbody rBody;
+    [SerializeField] private CharacterMovementController movementController;
+    [SerializeField] private GravityController gravityController;
+    [SerializeField] private CharacterCombatController combatController;
+    [SerializeField] private Rigidbody rBody;
 
     private StateMachine stateMach;
     private StateId currentStateId;
@@ -85,13 +85,15 @@ public class CharacterMasterController : MonoBehaviour {
         stateMach.AddState(StateId.ATTACKING);
 
         // create state connections
-        stateMach.LinkStates(StateId.IDLE, StateId.MOVING, CommandId.MOVE, CommandId.STOP); // complicated, remove two way transition adding
+        stateMach.LinkStates(StateId.IDLE, StateId.MOVING, CommandId.MOVE);
+        stateMach.LinkStates(StateId.MOVING, StateId.IDLE, CommandId.STOP);
 		stateMach.LinkStates(StateId.IDLE, StateId.IN_AIR, CommandId.JUMP, gravityController.jumpVelocity);
         stateMach.LinkStates(StateId.IDLE, StateId.IN_AIR, CommandId.FALL, 0.0f);
         stateMach.LinkStates(StateId.IN_AIR, StateId.IDLE, CommandId.LAND);
 
-        stateMach.LinkStates(StateId.IN_AIR, StateId.MOVING_IN_AIR, CommandId.MOVE, CommandId.STOP);
-		stateMach.LinkStates(StateId.MOVING, StateId.MOVING_IN_AIR, CommandId.JUMP, gravityController.jumpVelocity);
+        stateMach.LinkStates(StateId.IN_AIR, StateId.MOVING_IN_AIR, CommandId.MOVE);
+        stateMach.LinkStates(StateId.MOVING_IN_AIR, StateId.IN_AIR, CommandId.STOP);
+        stateMach.LinkStates(StateId.MOVING, StateId.MOVING_IN_AIR, CommandId.JUMP, gravityController.jumpVelocity);
         stateMach.LinkStates(StateId.MOVING, StateId.MOVING_IN_AIR, CommandId.FALL, 0.0f);
 		stateMach.LinkStates(StateId.MOVING_IN_AIR, StateId.MOVING, CommandId.LAND);
 
@@ -103,6 +105,9 @@ public class CharacterMasterController : MonoBehaviour {
     private void UpdateStateMachine()
     {
         // consider the order of these if statements in the future
+        int comInt = Utilities.defInt;
+        float comFloat = Utilities.defFloat;
+
         if (GetMovementStickPosition() != Controls.neutralStickPosition)
         {
             stateMach.CommandMachine(CommandId.MOVE);
@@ -113,18 +118,18 @@ public class CharacterMasterController : MonoBehaviour {
         }
         if (Input.GetKeyDown(Controls.Jump))
         {
-			float jumpVel = stateMach.CommandMachine(CommandId.JUMP);
-            if (jumpVel > -1.0f) // fix up later: Under no circumstances will jumpVel be below -1 but this could be more elegant
+            stateMach.CommandMachine(CommandId.JUMP, ref comFloat, ref comInt);
+            if (!float.IsInfinity(comFloat)) // fix up later: Under no circumstances will jumpVel be below -1 but this could be more elegant
             {
-                gravityController.StartJump(jumpVel);
+                gravityController.StartJump(comFloat);
             }
         }
         else if (!gravityController.IsGrounded())
         {
-            float jumpVel = stateMach.CommandMachine(CommandId.FALL);
-            if (jumpVel > -1.0f)
+            stateMach.CommandMachine(CommandId.FALL, ref comFloat, ref comInt);
+            if (!float.IsInfinity(comFloat))
             {
-                gravityController.StartJump(jumpVel);
+                gravityController.StartJump(comFloat);
             }
         }
         else

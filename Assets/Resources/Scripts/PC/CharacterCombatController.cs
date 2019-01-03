@@ -16,13 +16,14 @@ public class CharacterCombatController : MonoBehaviour {
 
     public void AttackCommand(float stickPosition) // the stick will alter the chosen attack in some instances
     {
+        int nextAttack = (int)StateId.IDLE;
         if (stickPosition == Controls.neutralStickPosition)
         {
-            attackMach.CommandMachine(CommandId.ATTACK);
+            attackMach.CommandMachine(CommandId.ATTACK, ref nextAttack);
         }
         else
         {
-            attackMach.CommandMachine(CommandId.ATTACK);
+            attackMach.CommandMachine(CommandId.ATTACK, ref nextAttack);
         }
     }
 
@@ -34,9 +35,9 @@ public class CharacterCombatController : MonoBehaviour {
         attackMach.AddState(StateId.COMBO_1_2);
         attackMach.AddState(StateId.COMBO_1_3);
 
-        attackMach.LinkStates(StateId.IDLE, StateId.COMBO_1_1, CommandId.ATTACK, 10.0f);
-        attackMach.LinkStates(StateId.COMBO_1_1, StateId.COMBO_1_2, CommandId.ATTACK, 10.0f);
-        attackMach.LinkStates(StateId.COMBO_1_2, StateId.COMBO_1_3, CommandId.ATTACK, 15.0f);
+        attackMach.LinkStates(StateId.IDLE, StateId.COMBO_1_1, CommandId.ATTACK, (int)StateId.COMBO_1_1);
+        attackMach.LinkStates(StateId.COMBO_1_1, StateId.COMBO_1_2, CommandId.ATTACK, (int)StateId.COMBO_1_2);
+        attackMach.LinkStates(StateId.COMBO_1_2, StateId.COMBO_1_3, CommandId.ATTACK, (int)StateId.COMBO_1_3);
 
         attackMach.LinkAllStates(StateId.IDLE, CommandId.WAIT_LONG);
     }

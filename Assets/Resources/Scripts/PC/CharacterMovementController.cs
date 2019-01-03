@@ -9,7 +9,6 @@ public class CharacterMovementController : MonoBehaviour {
     // private float currentSpeed;
 
     private Camera mainCam;
-    private CharacterCombatController combat;
     public Rigidbody rBody;
     public GravityController gravity;
 
@@ -20,7 +19,6 @@ public class CharacterMovementController : MonoBehaviour {
     void Start()
     {
         Physics.IgnoreLayerCollision(11, 10); // ignore collisions between player and weapon
-        combat = gameObject.GetComponent<CharacterCombatController>();
 
         mainCam = Camera.main;
 

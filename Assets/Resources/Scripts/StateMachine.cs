@@ -38,15 +38,69 @@ public class StateMachine {
         states.Add(defaultState);
     }
 
-	public float CommandMachine(CommandId command)
+    /// <summary>
+    /// Commands the state machine with no values provided
+    /// </summary>
+    /// <param name="command"></param>
+    /// <returns>true if transition is successful, false otherwise</returns>
+    public bool CommandMachine(CommandId command)
+    {
+        if (currentState.CheckValidCommand(command))
+        {
+            currentState = currentState.GetNextState(command);
+            return true;
+        }
+        return false;
+    }
+    /// <summary>
+    /// Commands the state machine with the integer provided
+    /// </summary>
+    /// <param name="command"></param>
+    /// <param name="comInt"></param>
+    /// <returns>true if successful, false otherwise. Will give the command's integer value by reference</returns>
+    public bool CommandMachine(CommandId command, ref int comInt)
+    {
+        if (currentState.CheckValidCommand(command))
+        {
+            comInt = currentState.GetCommandInt(command);
+            currentState = currentState.GetNextState(command);
+            return true;
+        }
+        return false;
+    }
+    /// <summary>
+    /// Commands the state machine with no values provided
+    /// </summary>
+    /// <param name="command"></param>
+    /// <param name="comFloat"></param>
+    /// <returns>true if successful, false otherwise. Will give the command's float value by reference</returns>
+    public bool CommandMachine(CommandId command, ref float comFloat)
+    {
+        if (currentState.CheckValidCommand(command))
+        {
+            comFloat = currentState.GetCommandFloat(command);
+            currentState = currentState.GetNextState(command);
+            return true;
+        }
+        return false;
+    }
+    /// <summary>
+    /// Commands the state machine with no values provided
+    /// </summary>
+    /// <param name="command"></param>
+    /// <param name="comFloat"></param>
+    /// <param name="comInt"></param>
+    /// <returns>true if successful, false otherwise. Will give both of the command's values by reference</returns>
+    public bool CommandMachine(CommandId command, ref float comFloat, ref int comInt)
 	{
 		if (currentState.CheckValidCommand(command))
 		{
-			float commandVal = currentState.GetCommandValue(command);
+			comFloat = currentState.GetCommandFloat(command);
+            comInt = currentState.GetCommandInt(command);
 			currentState = currentState.GetNextState(command);
-			return commandVal;
+			return true;
 		}
-		return Mathf.NegativeInfinity;
+		return false;
 	}
 
     public bool LinkStates(StateId currentStateId, StateId nextStateId, CommandId command)
@@ -75,9 +129,7 @@ public class StateMachine {
 		return true;
 	}
 
-    // certain states might need toggling (such as moving and stopping), so this 
-    // overload allows the commands from one state to the next and back in a single function
-    public bool LinkStates(StateId currentStateId, StateId nextStateId, CommandId command, CommandId commandBack)
+    public bool LinkStates(StateId currentStateId, StateId nextStateId, CommandId command, int comValue)
     {
         State currentState = FindState(currentStateId);
         State nextState = FindState(nextStateId);
@@ -86,12 +138,17 @@ public class StateMachine {
             return false; // function works iff both states exist
         }
 
-        currentState.AddTransition(nextState, command);
-        nextState.AddTransition(currentState, commandBack);
+        currentState.AddTransition(nextState, command, comValue);
         return true;
     }
 
     // some situations require ANY state to return to one state (such as waiting out an attack animation)
+    /// <summary>
+    /// Links ALL states to a single state, transitioning via a single command.
+    /// </summary>
+    /// <param name="nextStateId"></param>
+    /// <param name="command"></param>
+    /// <returns>Returns true if linking is successful, false otherwise</returns>
     public bool LinkAllStates(StateId nextStateId, CommandId command)
     {
         State nextState = FindState(nextStateId);
@@ -184,17 +241,26 @@ public class State {
 		}
 		return -1;
 	}
-	public float GetCommandValue(CommandId command)
+	public float GetCommandFloat(CommandId command)
 	{
 		for (int x = 0; x < validCommands.Count; x++) // is foreach better?
 		{
 			if (command == validCommands[x].GetCommandId())
-				return validCommands[x].GetCommandValue();
+				return validCommands[x].GetCommandFloat();
 		}
-		return Mathf.NegativeInfinity;
+		return Utilities.defFloat;
 	}
+    public int GetCommandInt(CommandId command)
+    {
+        for (int x = 0; x < validCommands.Count; x++) // is foreach better?
+        {
+            if (command == validCommands[x].GetCommandId())
+                return validCommands[x].GetCommandInt();
+        }
+        return Utilities.defInt;
+    }
 
-	public State GetNextState(CommandId command)
+    public State GetNextState(CommandId command)
 	{
 		if (!CheckValidCommand(command))
 			return StateMachine.errorState;
@@ -227,40 +293,63 @@ public class State {
 		validCommands.Add(new Command(commandId, commandValue));
 		validStates.Add(newState);
 	}
+
+    public void AddTransition(State newState, CommandId commandId, int commandValue)
+    {
+        if (validCommands.Count != validStates.Count)
+        {
+            return; // how should we handle a potential mismatch in state/command sizes?
+        }
+        validCommands.Add(new Command(commandId, commandValue));
+        validStates.Add(newState);
+    }
 }
 
 public class Command
 {
 	private CommandId commandId;
-	private float commandValue;
+	private float commandFloat;
+    private int commandInt;
 
 	public Command()
 	{
 		commandId = CommandId.ERROR_COMMAND;
-		commandValue = Mathf.NegativeInfinity;
+		commandFloat = Mathf.NegativeInfinity;
 	}
 
 	public Command(CommandId id)
 	{
 		commandId = id;
-		commandValue = Mathf.NegativeInfinity;
+		commandFloat = Mathf.NegativeInfinity;
 	}
 
 	public Command(CommandId id, float value)
 	{
 		commandId = id;
-		commandValue = value;
+        commandInt = int.MinValue;
+		commandFloat = value;
 	}
+
+    public Command(CommandId id, int value)
+    {
+        commandId = id;
+        commandInt = value;
+        commandFloat = Mathf.NegativeInfinity;
+    }
 
 
     public CommandId GetCommandId()
 	{
 		return commandId;
 	}
-	public float GetCommandValue()
+	public float GetCommandFloat()
 	{
-		return commandValue;
+		return commandFloat;
 	}
+    public int GetCommandInt()
+    {
+        return commandInt;
+    }
 
 }
 
