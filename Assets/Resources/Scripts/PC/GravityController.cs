@@ -9,7 +9,6 @@ public class GravityController : MonoBehaviour {
     public float terminalVelocity;
 
     private bool grounded;
-    private bool jumpReady;
 
     private Vector3 verticalTranslation;
     private Vector3 projectedVector;
@@ -24,7 +23,6 @@ public class GravityController : MonoBehaviour {
     void Start () {
         verticalTranslation = Vector3.zero;
         grounded = false;
-        jumpReady = false;
 
         slopeOffset = Vector3.down * objectCollider.bounds.size.y / 2;
 
@@ -36,20 +34,15 @@ public class GravityController : MonoBehaviour {
         if (grounded)
         {
             verticalTranslation = Vector3.zero;
-            if (!jumpReady)
-                jumpReady = true;
         }
 
         else
         {
             // gravity stuff
-            if (!jumpReady)
+            verticalTranslation.y -= weightFactor * Time.fixedDeltaTime;
+            if (verticalTranslation.y <= terminalVelocity * -1)
             {
-                verticalTranslation.y -= weightFactor * Time.fixedDeltaTime;
-                if (verticalTranslation.y <= terminalVelocity * -1)
-                {
-                    verticalTranslation.y = terminalVelocity * -1;
-                }
+                verticalTranslation.y = terminalVelocity * -1;
             }
         }
 
@@ -114,7 +107,6 @@ public class GravityController : MonoBehaviour {
         if (collision.contacts.Length == 0)
         {
             grounded = false;
-            jumpReady = false;
         }
     }
 
@@ -131,11 +123,7 @@ public class GravityController : MonoBehaviour {
     // enables code to be reused for non-player entities that might want to jump
 	public void StartJump(float jumpVel)
     {
-        if (jumpReady)
-        {
-            jumpReady = false;
-            grounded = false;
-            verticalTranslation.y = jumpVel * Time.deltaTime;
-        }
+        grounded = false;
+        verticalTranslation.y = jumpVel;
     }
 }

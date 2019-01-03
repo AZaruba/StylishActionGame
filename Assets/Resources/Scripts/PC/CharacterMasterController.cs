@@ -17,11 +17,15 @@ public class CharacterMasterController : MonoBehaviour {
 	void Start () {
         InitializeStateMachine();
 	}
-	
-	// NOTE FOR LATER: If each object is governed by a state machine, elegant pausing is easy
-	void FixedUpdate () {
-        // in here we would check state and call the corresponding functions here, via a switch
+
+    // evidently input should be read in update and not fixedUpdate
+    void Update()
+    {
         UpdateStateMachine();
+    }
+
+    // NOTE FOR LATER: If each object is governed by a state machine, elegant pausing is easy
+    void FixedUpdate () {
 
         /* I don't want materials-based physics, setting velocities to zero allows the
          * Rigidbody to prevent clipping while not causing any unwanted forces.
@@ -98,75 +102,42 @@ public class CharacterMasterController : MonoBehaviour {
 
     private void UpdateStateMachine()
     {
-        switch (currentStateId)
+        // consider the order of these if statements in the future
+        if (GetMovementStickPosition() != Controls.neutralStickPosition)
         {
-            case (StateId.IDLE): // GET RID OF THIS, THE POINT OF A STATE MACHINE IS TO NOT NEED THIS
+            stateMach.CommandMachine(CommandId.MOVE);
+        }
+        else
+        {
+            stateMach.CommandMachine(CommandId.STOP);
+        }
+        if (Input.GetKeyDown(Controls.Jump))
+        {
+			float jumpVel = stateMach.CommandMachine(CommandId.JUMP);
+            if (jumpVel > -1.0f) // fix up later: Under no circumstances will jumpVel be below -1 but this could be more elegant
             {
-                if (GetMovementStickPosition() != Controls.neutralStickPosition)
-                {
-                    stateMach.CommandMachine(CommandId.MOVE);
-                }
-                if (Input.GetKey(Controls.Jump))
-                {
-					float jumpVel = stateMach.CommandMachine(CommandId.JUMP);
-					gravityController.StartJump(jumpVel);
-                }
-                if (!gravityController.IsGrounded())
-                {
-                    float jumpVel = stateMach.CommandMachine(CommandId.FALL);
-                    gravityController.StartJump(jumpVel);
-                }
-                break;
-            }
-            case (StateId.MOVING):
-            {
-                if (GetMovementStickPosition() == Controls.neutralStickPosition)
-                {
-                    stateMach.CommandMachine(CommandId.STOP);
-                }
-                if (Input.GetKey(Controls.Jump))
-                {
-                    float jumpVel = stateMach.CommandMachine(CommandId.JUMP);
-					gravityController.StartJump(jumpVel);
-                }
-                if (!gravityController.IsGrounded())
-                {
-                    float jumpVel = stateMach.CommandMachine(CommandId.FALL);
-                    gravityController.StartJump(jumpVel);
-                }
-                break;
-            }
-            case (StateId.IN_AIR):
-            {
-                if (GetMovementStickPosition() != Controls.neutralStickPosition)
-                {
-                    stateMach.CommandMachine(CommandId.MOVE);
-                }
-				if (gravityController.IsGrounded())
-                {
-                    stateMach.CommandMachine(CommandId.LAND);
-                }
-                break;
-            }
-            case (StateId.MOVING_IN_AIR):
-            {
-                if (GetMovementStickPosition() == Controls.neutralStickPosition)
-                {
-                    stateMach.CommandMachine(CommandId.STOP);
-                }
-				if (gravityController.IsGrounded())
-                {
-                    Debug.Log("Womp moving");
-                    stateMach.CommandMachine(CommandId.LAND);
-                }
-                break;
+                gravityController.StartJump(jumpVel);
             }
         }
-        if (Input.GetKey(Controls.Attack))
+        else if (!gravityController.IsGrounded())
+        {
+            float jumpVel = stateMach.CommandMachine(CommandId.FALL);
+            if (jumpVel > -1.0f)
+            {
+                gravityController.StartJump(jumpVel);
+            }
+        }
+        else
+        {
+            stateMach.CommandMachine(CommandId.LAND);
+        }
+        /* commented out until we get attacking worked out
+        if (Input.GetKeyDown(Controls.Attack))
         {
             stateMach.CommandMachine(CommandId.ATTACK);
             combatController.AttackCommand(GetMovementStickPosition());
         }
+        */
         currentStateId = stateMach.GetCurrentStateId();
     }
 

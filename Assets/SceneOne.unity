@@ -1124,6 +1124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30cb700d339907d47ade19307e7c2471, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hitboxObject: {fileID: 0}
 --- !u!114 &1828475842
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1135,8 +1136,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07758ba1ea4879b4f824c617f099eec2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weightFactor: 0.4
-  jumpVelocity: 10
+  weightFactor: 0.6
+  jumpVelocity: 0.3
   terminalVelocity: 2
   objectCollider: {fileID: 1828475836}
 --- !u!114 &1828475844
@@ -1165,6 +1166,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementController: {fileID: 1828475840}
   gravityController: {fileID: 1828475842}
+  combatController: {fileID: 1828475841}
   rBody: {fileID: 1828475839}
 --- !u!1 &1969143558
 GameObject:
