@@ -6,8 +6,6 @@ public class Weapon : MonoBehaviour {
 
     private bool isAttacking;
     private bool hasLinked;
-    List<Attack> attacks;
-    Attack currentAttack;
 
     public float debugAttackDistance;
     private Vector3 debugOriginalPosition;
@@ -21,117 +19,19 @@ public class Weapon : MonoBehaviour {
 
         isAttacking = false;
         hasLinked = false;
-
-        attacks = new List<Attack>();
-        currentAttack = null;
-
-        InitializeAttack(0.75f, 0.25f, 10, Controls.Attack);
-        InitializeAttack(1.0f, 0.25f, 15, Controls.Attack);
-        attacks[0].LinkAttacks(attacks[1]);
     }
 
     // Update is called once per frame
     public void StartAttack() {
 
-        // for each potential combo start, we want a StartCoroutine here
-        if (Input.GetKeyDown(attacks[0].inputKey) && !isAttacking)
-        {
-            StartCoroutine(Attack(attacks[0]));
-            StartCoroutine(Animate(attacks[0].attackTime));
-        }
     }
 
     private void OnTriggerEnter(Collider collision)
     {
-        // this suffices while we still do not have the player taking damage implemented
-        if (!isAttacking)
-        {
-            return;
-        }
-
         IEnemy enemy = collision.gameObject.GetComponent<IEnemy>();
         if (enemy == null)
             return;
-
-        enemy.GetHit(currentAttack.damage);
     }
-
-    private void InitializeAttack(float aTime, float lTime, int aDamage, KeyCode key)
-    {
-        attacks.Add(new Attack(aTime, lTime, aDamage, key));
-    }
-
-    public bool IsAttacking()
-    {
-        return this.isAttacking;
-    }
-
-    /* COROUTINES
-     * Because attacks occur while the user performs some other input, we want them to go in their own coroutines.
-     */
-    public IEnumerator Attack(Attack attack)
-    {
-        currentAttack = attack; // set attack BEFORE in case coroutine does not set isAttacking
-        isAttacking = true;
-        float time = attack.attackTime;
-        LoadAttackTexture(); // TODO: REMOVE
-
-        while (time > 0)
-        {
-            time -= Time.deltaTime;
-
-            // if the time remaining in the animation reaches the link value, start the link
-            // DISABLING COMBOS until ONE attack works
-            if (time <= attack.linkTime && !hasLinked)
-            {
-                LoadLinkTexture();
-                StartCoroutine(LinkCombo(attack.nextAttack, attack.linkTime));
-                yield break;
-            }
-
-            yield return null;
-        }
-
-        isAttacking = false;
-        currentAttack = null; // reset attack AFTER in case coroutine does not go past isAttacking
-        ResetTexture(); // TODO: REMOVE
-        yield return null;
-    }
-
-    public IEnumerator LinkCombo(Attack nextAttack, float linkTime)
-    {
-        // short circuit: if we cannot follow up the current attack, just reset to one
-        if (nextAttack == null)
-        {
-            isAttacking = false;
-            ResetTexture();
-            yield break;
-        }
-
-        float time = linkTime;
-
-        while (time > 0)
-        {
-            time -= Time.deltaTime;
-
-            if (Input.GetKeyDown(nextAttack.inputKey))
-            {
-                hasLinked = true;
-                StartCoroutine(Attack(nextAttack));
-                StartCoroutine(AnimateTwo(nextAttack.attackTime));
-                hasLinked = false;
-                yield break;
-
-            }
-            yield return null;
-        }
-
-        isAttacking = false;
-        hasLinked = false;
-        ResetTexture();
-        yield return null;
-    }
-
     /* DEBUG FUNCTIONS
      * The following functions are useful for development purposes, but will be removed
      * as they are replaced with permanent solutions.
@@ -215,38 +115,4 @@ public class Weapon : MonoBehaviour {
 
         gameObject.GetComponent<Renderer>().material.mainTexture = texture;
     }
-}
-
-public class Attack
-{
-    public Attack(float aTime, float lTime, int aDamage, KeyCode key)
-    {
-        this.attackTime = aTime;
-        this.linkTime = lTime;
-        this.damage = aDamage;
-        this.inputKey = key;
-
-        // xAxis = 0;
-        // yAxis = 0;
-    }
-
-    public void LinkAttacks(Attack next)
-    {
-        this.nextAttack = next;
-    }
-
-    // Timing data
-    public float attackTime;
-    public float linkTime;
-
-    // Combat data
-    public int damage;
-    public Attack nextAttack;
-
-    // Input data
-    public KeyCode inputKey;
-
-    // public float xAxis;
-    // public float yAxis;
-
 }

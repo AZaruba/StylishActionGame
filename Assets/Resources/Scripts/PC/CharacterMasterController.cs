@@ -7,6 +7,7 @@ public class CharacterMasterController : MonoBehaviour {
     // eventually this class will call all other character controllers' FixedUpdate() in this FixedUpdate()
     public CharacterMovementController movementController;
     public GravityController gravityController;
+    public CharacterCombatController combatController;
     public Rigidbody rBody;
 
     private StateMachine stateMach;
@@ -60,6 +61,11 @@ public class CharacterMasterController : MonoBehaviour {
                 rBody.MovePosition(newPosition);
                 break;
             }
+            case (StateId.ATTACKING):
+            {
+
+                break;
+            }
         }
 	}
 
@@ -72,6 +78,7 @@ public class CharacterMasterController : MonoBehaviour {
         stateMach.AddState(StateId.MOVING);
         stateMach.AddState(StateId.IN_AIR);
         stateMach.AddState(StateId.MOVING_IN_AIR);
+        stateMach.AddState(StateId.ATTACKING);
 
         // create state connections
         stateMach.LinkStates(StateId.IDLE, StateId.MOVING, CommandId.MOVE, CommandId.STOP); // complicated, remove two way transition adding
@@ -83,13 +90,17 @@ public class CharacterMasterController : MonoBehaviour {
 		stateMach.LinkStates(StateId.MOVING, StateId.MOVING_IN_AIR, CommandId.JUMP, gravityController.jumpVelocity);
         stateMach.LinkStates(StateId.MOVING, StateId.MOVING_IN_AIR, CommandId.FALL, 0.0f);
 		stateMach.LinkStates(StateId.MOVING_IN_AIR, StateId.MOVING, CommandId.LAND);
+
+        stateMach.LinkStates(StateId.IDLE, StateId.ATTACKING, CommandId.ATTACK);
+        stateMach.LinkStates(StateId.MOVING, StateId.ATTACKING, CommandId.ATTACK);
+        stateMach.LinkStates(StateId.ATTACKING, StateId.IDLE, CommandId.WAIT_LONG);
     }
 
     private void UpdateStateMachine()
     {
         switch (currentStateId)
         {
-            case (StateId.IDLE):
+            case (StateId.IDLE): // GET RID OF THIS, THE POINT OF A STATE MACHINE IS TO NOT NEED THIS
             {
                 if (GetMovementStickPosition() != Controls.neutralStickPosition)
                 {
@@ -150,6 +161,11 @@ public class CharacterMasterController : MonoBehaviour {
                 }
                 break;
             }
+        }
+        if (Input.GetKey(Controls.Attack))
+        {
+            stateMach.CommandMachine(CommandId.ATTACK);
+            combatController.AttackCommand(GetMovementStickPosition());
         }
         currentStateId = stateMach.GetCurrentStateId();
     }

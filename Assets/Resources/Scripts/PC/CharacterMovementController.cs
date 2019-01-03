@@ -32,12 +32,9 @@ public class CharacterMovementController : MonoBehaviour {
         // multiple MovePosition calls didn't work, so accumulating vectors and calling it once is a good fix
         Vector3 newPosition = Vector3.zero;
 
-        if (!combat.IsAttacking())
+        if (stickDegree != Controls.neutralStickPosition)
         {
-            if (stickDegree != Controls.neutralStickPosition)
-            {
-                newPosition += WalkInput(stickDegree);
-            }
+            newPosition += WalkInput(stickDegree);
         }
 
         horizontalTranslation = newPosition;

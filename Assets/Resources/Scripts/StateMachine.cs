@@ -91,6 +91,23 @@ public class StateMachine {
         return true;
     }
 
+    // some situations require ANY state to return to one state (such as waiting out an attack animation)
+    public bool LinkAllStates(StateId nextStateId, CommandId command)
+    {
+        State nextState = FindState(nextStateId);
+
+        if (nextState == null)
+        {
+            return false;
+        }
+
+        for (int x = 0; x < states.Count; x++)
+        {
+            states[x].AddTransition(nextState, command);
+        }
+        return true;
+    }
+
     public bool CheckCurrentState(StateId id)
     {
         return id == currentState.GetStateId();
@@ -235,7 +252,8 @@ public class Command
 		commandValue = value;
 	}
 
-	public CommandId GetCommandId()
+
+    public CommandId GetCommandId()
 	{
 		return commandId;
 	}
@@ -253,22 +271,34 @@ public class Command
  */ 
 public enum CommandId
 {
+    // player character commands
 	ERROR_COMMAND = -1,
 	STOP = 0,
 	MOVE,
 	JUMP,
     FALL,
     LAND,
-	ATTACK,
+	ATTACK, // reused between character (issues the attack command to the combat controller) and combat
+    DASH,
 	INTERACT,
 	GET_HIT,
-	RECOVER
+	RECOVER,
+
+    // attack commands
+    WAIT, // combos will be based on when the button is pressed during animations
+    WAIT_LONG, // "long" wait refers to ending a combo early (some combos are activated by waiting before a press)
+    ATTACK_BACK, // pointing the stick toward or away will change attacks
+    ATTACK_FORWARD,
+
+    // Pause command
+    PAUSE
 }
 /* A list of all states
  * 
  */ 
 public enum StateId
 {
+    // player character states
 	ERROR_STATE = -1, // corresponds to StateMachine.errorState ONLY
 	IDLE = 0,
 	MOVING,
@@ -280,5 +310,17 @@ public enum StateId
 	INTERACTING_IN_AIR,
 	DAMAGED,
 	RECOVERING,
-	DEFEATED
+	DEFEATED,
+
+    // Attack states
+    COMBO_1_1, // jab (X)
+    COMBO_1_2, // punch (X)
+    COMBO_1_3, // kick (X)
+
+    COMBO_2_WAIT, // the waiting period between 1_2 and 2_3
+    COMBO_2_3, // sweep (wait, X)
+    COMBO_2_4, // explosion (X)
+
+    COMBO_3_1, // flip (back, X)
+    COMBO_3_2, // launch (X)
 }
