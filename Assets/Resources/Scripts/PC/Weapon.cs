@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Weapon : MonoBehaviour {
-
-    private bool isAttacking;
     private bool hasLinked;
 
     public float debugAttackDistance;
@@ -17,7 +15,6 @@ public class Weapon : MonoBehaviour {
         debugOriginalPosition = transform.localPosition;
         debugOriginalRotation = transform.localRotation;
 
-        isAttacking = false;
         hasLinked = false;
     }
 

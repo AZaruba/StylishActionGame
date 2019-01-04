@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+#region StateMachineClass
 public class StateMachine {
 
 	/* For each class/object using a StateMachine:
@@ -103,6 +104,13 @@ public class StateMachine {
 		return false;
 	}
 
+    /// <summary>
+    /// Link currentState to nextState via a transition
+    /// </summary>
+    /// <param name="currentStateId"></param>
+    /// <param name="nextStateId"></param>
+    /// <param name="command"></param>
+    /// <returns>Returns true if successful, false otherwise</returns>
     public bool LinkStates(StateId currentStateId, StateId nextStateId, CommandId command)
     {
         State currentState = FindState(currentStateId);
@@ -116,6 +124,14 @@ public class StateMachine {
         return true;
     }
 
+    /// <summary>
+    /// Link currentState to nextState via a transition, adds a float value to the transition
+    /// </summary>
+    /// <param name="currentStateId"></param>
+    /// <param name="nextStateId"></param>
+    /// <param name="command"></param>
+    /// <param name="comValue"></param>
+    /// <returns>Returns true if successful, false otherwise</returns>
 	public bool LinkStates(StateId currentStateId, StateId nextStateId, CommandId command, float comValue)
 	{
 		State currentState = FindState(currentStateId);
@@ -129,6 +145,14 @@ public class StateMachine {
 		return true;
 	}
 
+    /// <summary>
+    /// Link currentState to nextState via a transition, adds an int value to the transition
+    /// </summary>
+    /// <param name="currentStateId"></param>
+    /// <param name="nextStateId"></param>
+    /// <param name="command"></param>
+    /// <param name="comValue"></param>
+    /// <returns>Returns true if successful, false otherwise</returns>
     public bool LinkStates(StateId currentStateId, StateId nextStateId, CommandId command, int comValue)
     {
         State currentState = FindState(currentStateId);
@@ -201,7 +225,9 @@ public class StateMachine {
 		errorState = new State();
 	}
 }
+#endregion
 
+#region StateClass
 public class State {
 	private StateId stateId;
 	private List<Command> validCommands; // two lists or one list of pairs?
@@ -304,7 +330,9 @@ public class State {
         validStates.Add(newState);
     }
 }
+#endregion
 
+#region CommandClass
 public class Command
 {
 	private CommandId commandId;
@@ -352,12 +380,17 @@ public class Command
     }
 
 }
+#endregion
+
+#region StateAndCommandIds
+/* Using IDs enables classes to create and manage a state machine 
+without accessing an entire state or command object */
 
 /* A list of all available commands for each entity in the game
  * Characters/Entities will have enabled/disabled commands
  * (for example, all characters might be able to move, but only
  * some may be able to jump)
- */ 
+ */
 public enum CommandId
 {
     // player character commands
@@ -379,8 +412,18 @@ public enum CommandId
     ATTACK_BACK, // pointing the stick toward or away will change attacks
     ATTACK_FORWARD,
 
+    // camera commands
+    FOLLOW,
+    RESET,
+    LOCK_ON,
+    UNLOCK,
+    // look range commands
+    COLLIDE,
+    // RESET
+    
+
     // Pause command
-    PAUSE
+    PAUSE,
 }
 /* A list of all states
  * 
@@ -412,4 +455,16 @@ public enum StateId
 
     COMBO_3_1, // flip (back, X)
     COMBO_3_2, // launch (X)
+
+    // camera states
+    FREE_LOOK,
+    FOLLOW_TARGET,
+    LOCK_ON_OBJECT,
+    // look range states
+    COLLIDING,
+    // IDLE
+
+    // pause state
+    PAUSE,
 }
+#endregion

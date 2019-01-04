@@ -43,7 +43,7 @@ public class CharacterMasterController : MonoBehaviour {
             case (StateId.MOVING):
             {
                 Vector3 newPosition = transform.position;
-                newPosition += movementController.HorizontalMovement(GetMovementStickPosition());
+                newPosition += movementController.HorizontalMovement(Utilities.GetMovementStickPosition());
 
                 rBody.MovePosition(newPosition);
                 break;
@@ -60,7 +60,7 @@ public class CharacterMasterController : MonoBehaviour {
             {
                 Vector3 newPosition = transform.position;
                 newPosition += gravityController.VerticalMovement();
-                newPosition += movementController.HorizontalMovement(GetMovementStickPosition());
+                newPosition += movementController.HorizontalMovement(Utilities.GetMovementStickPosition());
 
                 rBody.MovePosition(newPosition);
                 break;
@@ -108,7 +108,7 @@ public class CharacterMasterController : MonoBehaviour {
         int comInt = Utilities.defInt;
         float comFloat = Utilities.defFloat;
 
-        if (GetMovementStickPosition() != Controls.neutralStickPosition)
+        if (Utilities.GetMovementStickPosition() != Controls.neutralStickPosition)
         {
             stateMach.CommandMachine(CommandId.MOVE);
         }
@@ -144,12 +144,5 @@ public class CharacterMasterController : MonoBehaviour {
         }
         */
         currentStateId = stateMach.GetCurrentStateId();
-    }
-
-    private float GetMovementStickPosition()
-    {
-        if (Mathf.Abs(Input.GetAxis("Vertical")) > Controls.deadZone || Mathf.Abs(Input.GetAxis("Horizontal")) > Controls.deadZone)
-            return Mathf.Atan2(Input.GetAxis("Vertical"), -1 * Input.GetAxis("Horizontal"));
-        return Controls.neutralStickPosition; // return a value well outside of the range of Atan2
     }
 }

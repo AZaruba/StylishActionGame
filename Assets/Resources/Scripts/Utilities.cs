@@ -5,6 +5,9 @@ using UnityEngine;
 public static class Utilities {
     // This class contains functions that may be useful in a variety of contexts
 
+    #region MathUtilities
+    // These functions extend the math/logic functionality of the code
+
     /// <summary>
     /// Checks if two floats are equal
     /// </summary>
@@ -12,7 +15,7 @@ public static class Utilities {
     /// <param name="f2"></param>
     /// <param name="nPrecision"></param>
     /// <returns>true if equal, false otherwise</returns>
-	public static bool CompareFloats(float f1, float f2, int nPrecision = 6)
+    public static bool CompareFloats(float f1, float f2, int nPrecision = 6)
     {
         float difference = Mathf.Abs(f1 - f2);
         if (difference < 1 / (Mathf.Pow(10,nPrecision*-1))) // allows an int to be passed instead of long strings of zeroes
@@ -36,7 +39,26 @@ public static class Utilities {
         }
         return false;
     }
+    #endregion
 
-    public static int defInt = int.MinValue;
-    public static float defFloat = Mathf.NegativeInfinity;
+    #region InputUtilities
+    // These functions interpret raw input for various gameplay purposes
+
+    /// <summary>
+    /// Takes the position of the stick and turns it into an angle usable by the game world.
+    /// Takes the specified dead zone into account so imprecise joysticks can cooperate.
+    /// </summary>
+    /// <returns>Returns the position of the stick as an angle between -180 and 180 degrees or a neutral position value</returns>
+    public static float GetMovementStickPosition()
+    {
+        if (Mathf.Abs(Input.GetAxis("Vertical")) > Controls.deadZone || Mathf.Abs(Input.GetAxis("Horizontal")) > Controls.deadZone)
+            return Mathf.Atan2(Input.GetAxis("Vertical"), -1 * Input.GetAxis("Horizontal"));
+        return Controls.neutralStickPosition; // return a value well outside of the range of Atan2
+    }
+    #endregion
+
+    #region Constants
+    public const int defInt = int.MinValue;
+    public const float defFloat = Mathf.NegativeInfinity;
+    #endregion
 }

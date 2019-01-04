@@ -239,6 +239,59 @@ MonoBehaviour:
   healthBarShader: {fileID: 2100000, guid: e014cb7ed4deca848975081598848a6a, type: 2}
   alphaMin: 0.24
   alphaMax: 0.76
+--- !u!1 &635663120
+GameObject:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 635663121}
+  - component: {fileID: 635663122}
+  - component: {fileID: 635663123}
+  m_Layer: 13
+  m_Name: FreeMoveRange
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &635663121
+Transform:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 635663120}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 8}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1214829619}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!135 &635663122
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 635663120}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 3
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &635663123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 635663120}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 547a81ccefe7d4a4281dcafe53aefe4e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &663025091
 GameObject:
   m_ObjectHideFlags: 0
@@ -586,7 +639,6 @@ GameObject:
   - component: {fileID: 1214829617}
   - component: {fileID: 1214829616}
   - component: {fileID: 1214829620}
-  - component: {fileID: 1214829622}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -652,38 +704,30 @@ Transform:
   m_GameObject: {fileID: 1214829615}
   m_LocalRotation: {x: 0.2164396, y: -0, z: -0, w: 0.97629607}
   m_LocalPosition: {x: 0, y: 5, z: -10}
-  m_LocalScale: {x: 1, y: 1.1520871, z: 1.1520873}
-  m_Children: []
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 635663121}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 25, y: 0, z: 0}
---- !u!54 &1214829620
-Rigidbody:
+--- !u!114 &1214829620
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1214829615}
-  serializedVersion: 2
-  m_Mass: 1
-  m_Drag: 0
-  m_AngularDrag: 0
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 1
-  m_Constraints: 0
-  m_CollisionDetection: 0
---- !u!65 &1214829622
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1214829615}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.5, y: 0.5, z: 0.5}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 582c6aeb010fc664482187fae5680b52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  heightFromGround: 0
+  distanceFromTarget: 0
+  pitchRotation: 0
+  horizontalOffset: 0
+  maxVerticalAngle: 0
+  target: {fileID: 1828475834}
+  freeMoveRange: {fileID: 635663120}
 --- !u!1 &1383542127
 GameObject:
   m_ObjectHideFlags: 0
@@ -1179,8 +1223,7 @@ GameObject:
   - component: {fileID: 1969143561}
   - component: {fileID: 1969143560}
   - component: {fileID: 1969143559}
-  - component: {fileID: 1969143563}
-  m_Layer: 13
+  m_Layer: 8
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1253,16 +1296,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1969143563
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1969143558}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2c88ad500cf5054c8412c47c86d2e0a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  keyId: 0
-  descr: Door
