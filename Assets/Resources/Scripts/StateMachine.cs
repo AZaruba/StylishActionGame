@@ -418,7 +418,7 @@ public enum CommandId
     LOCK_ON,
     UNLOCK,
     // look range commands
-    COLLIDE,
+    FOLLOW_TARGET,
     // RESET
     
 
@@ -461,8 +461,8 @@ public enum StateId
     FOLLOW_TARGET,
     LOCK_ON_OBJECT,
     // look range states
-    COLLIDING,
-    // IDLE
+    TARGET_INSIDE_RANGE,
+    TARGET_OUTSIDE_RANGE,
 
     // pause state
     PAUSE,

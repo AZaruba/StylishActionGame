@@ -19,21 +19,21 @@ public class CameraMoveRangeController : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
-        stateMach.CommandMachine(CommandId.COLLIDE);
+        stateMach.CommandMachine(CommandId.RESET);
     }
 
     private void OnTriggerExit(Collider other)
     {
-        stateMach.CommandMachine(CommandId.RESET);
+        stateMach.CommandMachine(CommandId.FOLLOW_TARGET);
     }
 
     private void InitializeStateMachine()
     {
         stateMach = new StateMachine(StateId.IDLE);
 
-        stateMach.AddState(StateId.COLLIDING);
+        stateMach.AddState(StateId.TARGET_INSIDE_RANGE);
 
-        stateMach.LinkStates(StateId.IDLE, StateId.COLLIDING, CommandId.COLLIDE);
-        stateMach.LinkStates(StateId.COLLIDING, StateId.IDLE, CommandId.RESET);
+        stateMach.LinkStates(StateId.TARGET_INSIDE_RANGE, StateId.TARGET_OUTSIDE_RANGE, CommandId.FOLLOW_TARGET);
+        stateMach.LinkStates(StateId.TARGET_OUTSIDE_RANGE, StateId.TARGET_INSIDE_RANGE, CommandId.RESET);
     }
 }

@@ -33,13 +33,15 @@ public class CameraController : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-        if (rangeController.GetCurrentState() == StateId.IDLE)
+        transform.LookAt(target.transform);
+
+        if (rangeController.GetCurrentState() == StateId.TARGET_INSIDE_RANGE)
         {
 
         }
-        else if (rangeController.GetCurrentState() == StateId.COLLIDING)
+        else if (rangeController.GetCurrentState() == StateId.TARGET_OUTSIDE_RANGE)
         {
-
+            
         }
 	}
 
