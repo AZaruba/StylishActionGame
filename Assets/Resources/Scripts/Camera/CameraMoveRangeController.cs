@@ -29,7 +29,7 @@ public class CameraMoveRangeController : MonoBehaviour {
 
     private void InitializeStateMachine()
     {
-        stateMach = new StateMachine(StateId.IDLE);
+        stateMach = new StateMachine(StateId.TARGET_OUTSIDE_RANGE);
 
         stateMach.AddState(StateId.TARGET_INSIDE_RANGE);
 

@@ -13,9 +13,12 @@ public class CharacterMasterController : MonoBehaviour {
     private StateMachine stateMach;
     private StateId currentStateId;
 
+    private Vector3 positionDelta; // this is the change in player position for camera use
+
 	// Use this for initialization
 	void Start () {
         InitializeStateMachine();
+        InitializeVariables();
 	}
 
     // evidently input should be read in update and not fixedUpdate
@@ -33,17 +36,19 @@ public class CharacterMasterController : MonoBehaviour {
         rBody.velocity = Vector3.zero;
         rBody.angularVelocity = Vector3.zero;
 
-        switch (currentStateId)
+        switch (stateMach.GetCurrentStateId())
         {
             case (StateId.IDLE):
             {
+                positionDelta = Vector3.zero;
                 // do nothing
                 break;
             }
             case (StateId.MOVING):
             {
                 Vector3 newPosition = transform.position;
-                newPosition += movementController.HorizontalMovement(Utilities.GetMovementStickPosition());
+                positionDelta = movementController.HorizontalMovement(Utilities.GetMovementStickPosition());
+                newPosition += positionDelta;
 
                 rBody.MovePosition(newPosition);
                 break;
@@ -51,7 +56,8 @@ public class CharacterMasterController : MonoBehaviour {
             case (StateId.IN_AIR):
             {
                 Vector3 newPosition = transform.position;
-                newPosition += gravityController.VerticalMovement();
+                positionDelta = gravityController.VerticalMovement();
+                newPosition += positionDelta;
 
                 rBody.MovePosition(newPosition);
                 break;
@@ -59,8 +65,9 @@ public class CharacterMasterController : MonoBehaviour {
             case (StateId.MOVING_IN_AIR):
             {
                 Vector3 newPosition = transform.position;
-                newPosition += gravityController.VerticalMovement();
-                newPosition += movementController.HorizontalMovement(Utilities.GetMovementStickPosition());
+                positionDelta = gravityController.VerticalMovement();
+                positionDelta += movementController.HorizontalMovement(Utilities.GetMovementStickPosition());
+                newPosition += positionDelta;
 
                 rBody.MovePosition(newPosition);
                 break;
@@ -73,6 +80,7 @@ public class CharacterMasterController : MonoBehaviour {
         }
 	}
 
+    #region StateMachine
     private void InitializeStateMachine()
     {
         // generate a default state, so we know what "0" is
@@ -143,6 +151,18 @@ public class CharacterMasterController : MonoBehaviour {
             combatController.AttackCommand(GetMovementStickPosition());
         }
         */
-        currentStateId = stateMach.GetCurrentStateId();
     }
+    #endregion
+
+    private void InitializeVariables()
+    {
+        positionDelta = Vector3.zero;
+    }
+
+    #region GettersAndSetters
+    public Vector3 GetPositionDelta()
+    {
+        return positionDelta;
+    }
+    #endregion
 }

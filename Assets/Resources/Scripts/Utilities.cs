@@ -60,5 +60,8 @@ public static class Utilities {
     #region Constants
     public const int defInt = int.MinValue;
     public const float defFloat = Mathf.NegativeInfinity;
+
+    // layer masks
+    public const int environmentOnly = 1 << 8;
     #endregion
 }

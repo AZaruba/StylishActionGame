@@ -70,6 +70,15 @@ public class CharacterMovementController : MonoBehaviour {
         return cameraDirection;
     }
 
+    /// <summary>
+    /// Provides the current orientation of the player character
+    /// </summary>
+    /// <returns></returns>
+    public Vector3 GetCurrentOrientation()
+    {
+        return Vector3.forward;
+    }
+
     public Vector3 SendPosition()
     {
         return transform.position;

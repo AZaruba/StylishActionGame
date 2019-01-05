@@ -414,6 +414,7 @@ public enum CommandId
 
     // camera commands
     FOLLOW,
+    STAY_PUT,
     RESET,
     LOCK_ON,
     UNLOCK,
@@ -460,6 +461,7 @@ public enum StateId
     FREE_LOOK,
     FOLLOW_TARGET,
     LOCK_ON_OBJECT,
+    RETURN_TO_CENTER,
     // look range states
     TARGET_INSIDE_RANGE,
     TARGET_OUTSIDE_RANGE,
