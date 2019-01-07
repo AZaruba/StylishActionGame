@@ -462,6 +462,7 @@ public enum StateId
     FOLLOW_TARGET,
     LOCK_ON_OBJECT,
     RETURN_TO_CENTER,
+	FREE_LOOK_AT_CENTER,
     // look range states
     TARGET_INSIDE_RANGE,
     TARGET_OUTSIDE_RANGE,

@@ -14,13 +14,15 @@ public class CameraController : MonoBehaviour {
 
     [SerializeField] private float cameraSmoothingFactor;
 
+	[SerializeField] private float resetWaitTime;
+
     [SerializeField] private GameObject target;
     [SerializeField] private CharacterMasterController characterController;
     [SerializeField] private GameObject freeMoveRange;
     [SerializeField] private CameraMoveRangeController rangeController;
 
     private StateMachine cameraMach;
-    private Vector3 targetPosition;
+	private float timer;
 
     // Use this for initialization
     void Start ()
@@ -41,8 +43,7 @@ public class CameraController : MonoBehaviour {
             target.AddComponent<CharacterMasterController>();
             characterController = target.GetComponent<CharacterMasterController>();
         }
-
-        targetPosition = CalculateRequiredDistance();
+		timer = 0f;
 	}
 
     private void FixedUpdate()
@@ -53,6 +54,10 @@ public class CameraController : MonoBehaviour {
             {
                 break;
             }
+		    case (StateId.FREE_LOOK_AT_CENTER):
+			{
+				break;
+			}
             case (StateId.FOLLOW_TARGET):
             {
                 Vector3 delta = characterController.GetPositionDelta();
@@ -79,10 +84,21 @@ public class CameraController : MonoBehaviour {
                 Vector3 lookTarget = freeMoveRange.transform.position;
                 lookTarget.y += lookHeightAboveTarget;
                 transform.LookAt(lookTarget);
+				timer += Time.deltaTime;
                 break;
             }
+		    case (StateId.FREE_LOOK_AT_CENTER):
+			{
+				// for now doesn't need anything
+				Vector3 lookTarget = freeMoveRange.transform.position;
+				lookTarget.y += lookHeightAboveTarget;
+				transform.LookAt(lookTarget);
+				timer = 0f;
+				break;
+			}
             case (StateId.FOLLOW_TARGET):
             {
+				timer = 0f;
                 break;
             }
             case (StateId.RETURN_TO_CENTER):
@@ -97,38 +113,20 @@ public class CameraController : MonoBehaviour {
         }
     }
 
-    void LateUpdate ()
-    {
-        switch (cameraMach.GetCurrentStateId())
-        {
-            case (StateId.FREE_LOOK):
-            {
-                // for now doesn't need anything
-                break;
-            }
-            case (StateId.FOLLOW_TARGET):
-            {
-                break;
-            }
-            case (StateId.RETURN_TO_CENTER):
-            {
-                break;
-            }
-        }
-	}
-
     private void InitializeStateMachine()
     {
         cameraMach = new StateMachine(StateId.FREE_LOOK);
 
         cameraMach.AddState(StateId.FOLLOW_TARGET);
         cameraMach.AddState(StateId.RETURN_TO_CENTER);
+		cameraMach.AddState(StateId.FREE_LOOK_AT_CENTER);
 
         cameraMach.LinkStates(StateId.FREE_LOOK, StateId.FOLLOW_TARGET, CommandId.FOLLOW);
+		cameraMach.LinkStates(StateId.FREE_LOOK_AT_CENTER, StateId.FOLLOW_TARGET, CommandId.FOLLOW);
         cameraMach.LinkStates(StateId.FOLLOW_TARGET, StateId.FREE_LOOK, CommandId.STAY_PUT);
-        cameraMach.LinkStates(StateId.RETURN_TO_CENTER, StateId.FREE_LOOK, CommandId.STAY_PUT);
         cameraMach.LinkStates(StateId.RETURN_TO_CENTER, StateId.FOLLOW_TARGET, CommandId.FOLLOW); // if player is on edge of free move range then moves outside again
-        cameraMach.LinkAllStates(StateId.RETURN_TO_CENTER, CommandId.RESET);
+		cameraMach.LinkStates(StateId.RETURN_TO_CENTER, StateId.FREE_LOOK_AT_CENTER, CommandId.STAY_PUT);
+		cameraMach.LinkAllStates(StateId.RETURN_TO_CENTER, CommandId.RESET);
 
     }
 
@@ -136,9 +134,10 @@ public class CameraController : MonoBehaviour {
     {
         if (rangeController.GetCurrentState() == StateId.TARGET_INSIDE_RANGE)
         {
-            if (characterController.GetPositionDelta() == Vector3.zero && Vector3.Distance(transform.position, CalculateRequiredDistance()) > 0.1f)
-            {
-                cameraMach.CommandMachine(CommandId.RESET);
+            if (characterController.GetPositionDelta() == Vector3.zero && Vector3.Distance(transform.position, CalculateRequiredDistance()) > 0.1f
+				&& timer > resetWaitTime)
+			{
+				cameraMach.CommandMachine(CommandId.RESET);
             }
             else
             {
