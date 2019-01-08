@@ -85,6 +85,10 @@ public class CameraController : MonoBehaviour {
                 lookTarget.y += lookHeightAboveTarget;
                 transform.LookAt(lookTarget);
 				timer += Time.deltaTime;
+                if (characterController.GetCurrentState() == StateId.MOVING)
+                {
+                    timer = 0f;
+                }
                 break;
             }
 		    case (StateId.FREE_LOOK_AT_CENTER):

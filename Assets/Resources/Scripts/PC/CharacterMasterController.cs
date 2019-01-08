@@ -48,6 +48,7 @@ public class CharacterMasterController : MonoBehaviour {
             {
                 Vector3 newPosition = transform.position;
                 positionDelta = movementController.HorizontalMovement(Utilities.GetMovementStickPosition());
+                positionDelta = gravityController.ProjectTranslation(positionDelta);
                 newPosition += positionDelta;
 
                 rBody.MovePosition(newPosition);
@@ -66,9 +67,8 @@ public class CharacterMasterController : MonoBehaviour {
             {
                 Vector3 newPosition = transform.position;
                 positionDelta = gravityController.VerticalMovement();
-                positionDelta += movementController.HorizontalMovement(Utilities.GetMovementStickPosition());
+                positionDelta += movementController.AerialHorizontalMovement(Utilities.GetMovementStickPosition());
                 newPosition += positionDelta;
-
                 rBody.MovePosition(newPosition);
                 break;
             }
@@ -163,6 +163,11 @@ public class CharacterMasterController : MonoBehaviour {
     public Vector3 GetPositionDelta()
     {
         return positionDelta;
+    }
+
+    public StateId GetCurrentState()
+    {
+        return stateMach.GetCurrentStateId();
     }
     #endregion
 }

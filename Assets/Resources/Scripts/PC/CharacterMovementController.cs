@@ -4,13 +4,11 @@ using UnityEngine;
 
 public class CharacterMovementController : MonoBehaviour {
 
-    public float moveSpeed;
-    // private int collisionMask = 1 << 10;
-    // private float currentSpeed;
+    [SerializeField] private float moveSpeed;
+    [SerializeField] private float airMoveSpeed;
 
     private Camera mainCam;
     public Rigidbody rBody;
-    public GravityController gravity;
 
     private Vector3 horizontalTranslation;
 
@@ -32,29 +30,36 @@ public class CharacterMovementController : MonoBehaviour {
 
         if (stickDegree != Controls.neutralStickPosition)
         {
-            newPosition += WalkInput(stickDegree);
+            newPosition += WalkInput(moveSpeed, stickDegree);
         }
 
         horizontalTranslation = newPosition;
-
-        newPosition = gravity.ProjectTranslation(newPosition); // move this vertical translation here to better compartmentalize?
-
         return newPosition;
     }
 
-    private Vector3 WalkInput(float rotationDegree = 0.0f)
+    public Vector3 AerialHorizontalMovement(float stickDegree)
+    {
+        // multiple MovePosition calls didn't work, so accumulating vectors and calling it once is a good fix
+        Vector3 newPosition = Vector3.zero;
+
+        if (stickDegree != Controls.neutralStickPosition)
+        {
+            newPosition += WalkInput(airMoveSpeed, stickDegree);
+        }
+
+        horizontalTranslation = newPosition;
+        return newPosition;
+    }
+
+    private Vector3 WalkInput(float currentMoveSpeed, float rotationDegree = 0.0f)
     {
         Vector3 direction = new Vector3();
         Vector3 camDirection = GetCameraOrientation();
 
         direction.x = -1 * camDirection.z * Mathf.Cos(rotationDegree) + camDirection.x * Mathf.Sin(rotationDegree);
         direction.z = camDirection.z * Mathf.Sin(rotationDegree) + camDirection.x * Mathf.Cos(rotationDegree);
-
-        direction.Normalize();
-        camDirection.Normalize();
-
         rBody.MoveRotation(Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z)));
-        direction *= moveSpeed * Time.fixedDeltaTime;
+        direction *= currentMoveSpeed * Time.fixedDeltaTime * Utilities.GetMovementStickMagnitude();
 
         return direction;
     }

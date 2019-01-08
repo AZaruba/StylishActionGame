@@ -55,6 +55,22 @@ public static class Utilities {
             return Mathf.Atan2(Input.GetAxis("Vertical"), -1 * Input.GetAxis("Horizontal"));
         return Controls.neutralStickPosition; // return a value well outside of the range of Atan2
     }
+    public static float GetMovementStickMagnitude()
+    {
+        float horizontalValue = Mathf.Abs(Input.GetAxis("Horizontal"));
+        if (horizontalValue < Controls.deadZone)
+        {
+            horizontalValue = 0f;
+        }
+
+        float verticalValue = Mathf.Abs(Input.GetAxis("Vertical"));
+        if (verticalValue < Controls.deadZone)
+        {
+            verticalValue = 0f;
+        }
+        Vector2 magVec = new Vector2(horizontalValue, verticalValue);
+        return magVec.magnitude;
+    }
     #endregion
 
     #region Constants

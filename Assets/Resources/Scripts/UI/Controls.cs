@@ -52,7 +52,7 @@ public static class Controls {
                 break;
         }
         
-        Controls.SetDeadzone(0.5f);
+        Controls.SetDeadzone(0.2f);
         // Controls.SetSpecial(KeyCode.JoystickButton3);
     }
 
