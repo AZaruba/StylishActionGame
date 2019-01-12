@@ -56,9 +56,10 @@ public class CameraMoveRangeController : MonoBehaviour, Entity {
 	public void Pause()
 	{
 		currentStateId = stateMach.GetCurrentStateId();
+        Debug.Log(currentStateId);
 		stateMach.CommandMachine(CommandId.PAUSE);
 	}
-
+        
 	public void Unpause()
 	{
 		stateMach.ForceStateChange(currentStateId);

@@ -240,11 +240,13 @@ public class CameraController : MonoBehaviour, Entity {
 	{
 		currentStateId = cameraMach.GetCurrentStateId();
 		cameraMach.CommandMachine(CommandId.PAUSE);
+        rangeController.Pause();
 	}
 
 	public void Unpause()
 	{
 		cameraMach.ForceStateChange(currentStateId);
+        rangeController.Unpause();
 	}
 	#endregion
 }

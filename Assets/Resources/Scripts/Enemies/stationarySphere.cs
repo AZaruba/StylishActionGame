@@ -5,13 +5,10 @@ using UnityEngine;
 public class StationarySphere : MonoBehaviour, IEnemy {
 
     private int health;
-
-    private bool isGettingHit;
     public int attackDamage;
     public float moveSpeed;
 
     private Rigidbody rBody;
-    private LevelManager manager;
 
     // Use this for initialization
     void Start () {
@@ -19,7 +16,6 @@ public class StationarySphere : MonoBehaviour, IEnemy {
         // isGettingHit = false;
 
         rBody = gameObject.GetComponent<Rigidbody>();
-        manager = FindObjectOfType<LevelManager>(); // replace with singleton for scene manager
 	}
 	
 	void FixedUpdate () {
@@ -55,17 +51,12 @@ public class StationarySphere : MonoBehaviour, IEnemy {
 
     public void Attack()
     {
-        manager.SendAttack(attackDamage);
+		
     }
 
     public Vector3 CalculateMovement()
     {
-        if (isGettingHit)
-            return Vector3.zero;
-
-        Vector3 direction = manager.SharePlayerPosition() - transform.position;
-
-        return direction.normalized * moveSpeed * Time.fixedDeltaTime;
+		return Vector3.zero;
     }
 
     public void OnDefeat()
@@ -89,7 +80,6 @@ public class StationarySphere : MonoBehaviour, IEnemy {
      */ 
     private IEnumerator Stun(float stunTime)
     {
-        isGettingHit = true;
         float time = stunTime;
 
         while (time > 0)
@@ -97,8 +87,6 @@ public class StationarySphere : MonoBehaviour, IEnemy {
             time -= Time.fixedDeltaTime;
             yield return null;
         }
-
-        isGettingHit = false;
         yield return null;
     }
 

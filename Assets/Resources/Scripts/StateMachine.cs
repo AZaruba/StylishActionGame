@@ -247,11 +247,14 @@ public class StateMachine {
 	public void ForceStateChange(StateId nextStateId)
 	{
 		State nextState = FindState(nextStateId);
-		if (nextState != null)
-		{
-			currentState = nextState;
-		}
-		currentState = defaultState;
+        if (nextState != null)
+        {
+            currentState = nextState;
+        }
+        else
+        {
+            currentState = defaultState;
+        }
 	}
 }
 #endregion

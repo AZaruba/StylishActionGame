@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class LevelManager : MonoBehaviour {
 
-    List<IEnemy> enemies;
-    CharacterMovementController playerCharacter;
-    CharacterHealth playerHealth;
-
     public Transform sphereEnemy;
     public Transform pcSpawn;
 
@@ -15,18 +11,6 @@ public class LevelManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        playerCharacter = FindObjectOfType<CharacterMovementController>(); // skipping Singleton pattern for multiplayer possibilities!
-        playerHealth = FindObjectOfType<CharacterHealth>();
-        // Instantiate(sphereEnemy, new Vector3(3, 1, 3), Quaternion.identity);
-        // Instantiate(sphereEnemy, new Vector3(-3, 1, 3), Quaternion.identity); // disabling while we fix slopes
-
-        enemies = new List<IEnemy>();
-        StationarySphere[] spheres = FindObjectsOfType<StationarySphere>();
-        for (int x = 0; x < spheres.Length; x++)
-        {
-            enemies.Add(spheres[x]);
-        }
-
         paused = false;
 
         Controls.SetDefaultControls();
@@ -34,10 +18,12 @@ public class LevelManager : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetKeyDown(KeyCode.Joystick1Button7))
+        if (Input.GetKeyDown(Controls.Pause))
+        {
             TogglePause();
+        }
 
-        if (Input.GetKeyDown(KeyCode.Joystick1Button6))
+        if (Input.GetKeyDown(KeyCode.Escape))
             Application.Quit(); // safety, allows the game to be ended at any time
 	}
 
@@ -45,35 +31,32 @@ public class LevelManager : MonoBehaviour {
     {
         if (paused)
         {
-            Time.timeScale = 1;
+			UnpauseAllEntities();
             paused = false;
         }
         else
         {
-            Time.timeScale = 0;
+			PauseAllEntities();
             paused = true;
         }
     }
 
-    public Vector3 SharePlayerPosition()
-    {
-        return playerCharacter.SendPosition();
-    }
-    public Vector3 SharePlayerTranslation()
-    {
-        return playerCharacter.SendHorizontalTranslation();
-    }
+	private void UnpauseAllEntities()
+	{
+        // we know there will be only one character controller and one camera controller
+        CharacterMasterController charController = (CharacterMasterController)FindObjectOfType(typeof(CharacterMasterController));
+        CameraController camController = (CameraController)FindObjectOfType(typeof(CameraController));
 
-    public void SendAttack(int damage)
-    {
-        playerHealth.Damage(damage);
-    }
+        charController.Unpause();
+        camController.Unpause();
+	}
 
-    public void OnDefeat()
-    {
-        for (int x = 0; x < enemies.Count; x++)
-        {
-            enemies[x].OnPlayerDefeated();
-        }
-    }
+	private void PauseAllEntities()
+	{
+        CharacterMasterController charController = (CharacterMasterController)FindObjectOfType(typeof(CharacterMasterController));
+        CameraController camController = (CameraController)FindObjectOfType(typeof(CameraController));
+
+        charController.Pause();
+        camController.Pause();
+	}
 }
