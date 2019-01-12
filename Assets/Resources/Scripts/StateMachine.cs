@@ -27,6 +27,8 @@ public class StateMachine {
 		currentState = defaultState;
         states.Add(defaultState);
 
+		State pauseState = new State(StateId.PAUSE);
+		states.Add(pauseState);
 	}
 
     public StateMachine(StateId defStateId)
@@ -37,6 +39,9 @@ public class StateMachine {
         defaultState = defState;
         currentState = defaultState;
         states.Add(defaultState);
+
+		State pauseState = new State(StateId.PAUSE);
+		states.Add(pauseState);
     }
 
     /// <summary>
@@ -189,6 +194,15 @@ public class StateMachine {
         return true;
     }
 
+	/// <summary>
+	/// Adds the paused state to the machine, necessary for classes
+	/// implementing the Entity interface. Should be done AFTER adding all states.
+	/// </summary>
+	public void AddPauseState()
+	{
+		LinkAllStates(StateId.PAUSE, CommandId.PAUSE);
+	}
+
     public bool CheckCurrentState(StateId id)
     {
         return id == currentState.GetStateId();
@@ -223,6 +237,21 @@ public class StateMachine {
 	private void CreateErrorState()
 	{
 		errorState = new State();
+	}
+
+	/// <summary>
+	/// Forces the state to the current state, iff the state exists.
+	/// Use with caution, generally should only be used via unpause.
+	/// </summary>
+	/// <param name="nextStateId">Next state identifier.</param>
+	public void ForceStateChange(StateId nextStateId)
+	{
+		State nextState = FindState(nextStateId);
+		if (nextState != null)
+		{
+			currentState = nextState;
+		}
+		currentState = defaultState;
 	}
 }
 #endregion
@@ -423,8 +452,9 @@ public enum CommandId
     // RESET
     
 
-    // Pause command
+    // Pause commands
     PAUSE,
+	UNPAUSE,
 }
 /* A list of all states
  * 

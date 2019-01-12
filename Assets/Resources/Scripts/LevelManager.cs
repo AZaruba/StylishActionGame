@@ -41,25 +41,6 @@ public class LevelManager : MonoBehaviour {
             Application.Quit(); // safety, allows the game to be ended at any time
 	}
 
-    IEnumerator Pause()
-    {
-        paused = true;
-        Time.timeScale = 0;
-        while(true)
-        {
-            if (Input.GetKeyDown(KeyCode.Joystick1Button7))
-            {
-                paused = false;
-                Time.timeScale = 1;
-                yield break;
-            }
-            if (Input.GetKeyDown(KeyCode.Joystick1Button6))
-            {
-                Application.Quit();
-            }
-        }
-    }
-
     public void TogglePause()
     {
         if (paused)

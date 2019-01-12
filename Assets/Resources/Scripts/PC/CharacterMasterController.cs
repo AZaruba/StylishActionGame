@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterMasterController : MonoBehaviour {
+public class CharacterMasterController : MonoBehaviour, Entity {
 
     // eventually this class will call all other character controllers' FixedUpdate() in this FixedUpdate()
     [SerializeField] private CharacterMovementController movementController;
@@ -15,7 +15,7 @@ public class CharacterMasterController : MonoBehaviour {
 
     private Vector3 positionDelta; // this is the change in player position for camera use
 
-	// Use this for initialization
+	// Use this for initializationß
 	void Start () {
         InitializeStateMachine();
         InitializeVariables();
@@ -108,10 +108,18 @@ public class CharacterMasterController : MonoBehaviour {
         stateMach.LinkStates(StateId.IDLE, StateId.ATTACKING, CommandId.ATTACK);
         stateMach.LinkStates(StateId.MOVING, StateId.ATTACKING, CommandId.ATTACK);
         stateMach.LinkStates(StateId.ATTACKING, StateId.IDLE, CommandId.WAIT_LONG);
+
+		stateMach.AddPauseState();
     }
 
     private void UpdateStateMachine()
     {
+		// pausing should short circuit any updates
+		if (stateMach.GetCurrentStateId() == StateId.PAUSE)
+		{
+			return;
+		}
+
         // consider the order of these if statements in the future
         int comInt = Utilities.defInt;
         float comFloat = Utilities.defFloat;
@@ -170,4 +178,17 @@ public class CharacterMasterController : MonoBehaviour {
         return stateMach.GetCurrentStateId();
     }
     #endregion
+
+	#region StateSaving
+	public void Pause()
+	{
+		currentStateId = stateMach.GetCurrentStateId();
+		stateMach.CommandMachine(CommandId.PAUSE);
+	}
+
+	public void Unpause()
+	{
+		stateMach.ForceStateChange(currentStateId);
+	}
+	#endregion
 }

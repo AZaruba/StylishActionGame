@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraController : MonoBehaviour {
+public class CameraController : MonoBehaviour, Entity {
 
     [SerializeField] private float heightFromGround;
     [SerializeField] private float distanceFromTarget;
@@ -22,6 +22,7 @@ public class CameraController : MonoBehaviour {
     [SerializeField] private CameraMoveRangeController rangeController;
 
     private StateMachine cameraMach;
+	private StateId currentStateId;
 	private float timer;
 
     // Use this for initialization
@@ -132,10 +133,17 @@ public class CameraController : MonoBehaviour {
 		cameraMach.LinkStates(StateId.RETURN_TO_CENTER, StateId.FREE_LOOK_AT_CENTER, CommandId.STAY_PUT);
 		cameraMach.LinkAllStates(StateId.RETURN_TO_CENTER, CommandId.RESET);
 
+		cameraMach.AddPauseState();
     }
 
     private void UpdateStateMachine()
     {
+		// pausing should short circuit any updates
+		if (cameraMach.GetCurrentStateId() == StateId.PAUSE)
+		{
+			return;
+		}
+
         if (rangeController.GetCurrentState() == StateId.TARGET_INSIDE_RANGE)
         {
             if (characterController.GetPositionDelta() == Vector3.zero && Vector3.Distance(transform.position, CalculateRequiredDistance()) > 0.1f
@@ -226,4 +234,17 @@ public class CameraController : MonoBehaviour {
         transform.position = Vector3.Slerp(transform.position, targetPosition, cameraSmoothingFactor * Time.deltaTime);
     }
     #endregion
+
+	#region StateSaving
+	public void Pause()
+	{
+		currentStateId = cameraMach.GetCurrentStateId();
+		cameraMach.CommandMachine(CommandId.PAUSE);
+	}
+
+	public void Unpause()
+	{
+		cameraMach.ForceStateChange(currentStateId);
+	}
+	#endregion
 }
