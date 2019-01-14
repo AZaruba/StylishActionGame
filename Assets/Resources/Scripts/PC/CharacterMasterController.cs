@@ -190,5 +190,15 @@ public class CharacterMasterController : MonoBehaviour, Entity {
 	{
 		stateMach.ForceStateChange(currentStateId);
 	}
+
+    public Vector3 GetPosition()
+    {
+        return transform.position;
+    }
+
+    public void SetPosition(Vector3 newPosition)
+    {
+        transform.position = newPosition;
+    }
 	#endregion
 }

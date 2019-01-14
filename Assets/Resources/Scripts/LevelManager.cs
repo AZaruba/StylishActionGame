@@ -23,6 +23,11 @@ public class LevelManager : MonoBehaviour {
             TogglePause();
         }
 
+        if (paused && Input.GetKeyDown(Controls.Jump))
+        {
+            SaveGame();
+        }
+
         if (Input.GetKeyDown(KeyCode.Escape))
             Application.Quit(); // safety, allows the game to be ended at any time
 	}
@@ -59,4 +64,27 @@ public class LevelManager : MonoBehaviour {
         charController.Pause();
         camController.Pause();
 	}
+
+    /// <summary>
+    /// Sets up data then sends it to Utilities for saving
+    /// </summary>
+    private void SaveGame()
+    {
+        CharacterMasterController charController = (CharacterMasterController)FindObjectOfType(typeof(CharacterMasterController));
+        GameData dataOut; 
+
+        dataOut.playerPosition = charController.GetPosition();
+        Utilities.SaveGame(dataOut);
+    }
+
+    private bool LoadGame(string fileIn)
+    {
+        GameData dataIn = Utilities.LoadGame(fileIn);
+        if (!dataIn.successfulRead)
+        {
+            return false;
+        }
+        // load data into appropriate values
+        return true;
+    }
 }

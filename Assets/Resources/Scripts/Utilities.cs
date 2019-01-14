@@ -1,9 +1,73 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
+
+public struct GameData
+{
+    public Vector3 playerPosition;
+    public bool successfulRead;
+}
 
 public static class Utilities {
     // This class contains functions that may be useful in a variety of contexts
+
+    #region Constants
+    public const int defInt = int.MinValue;
+    public const float defFloat = Mathf.NegativeInfinity;
+
+    // layer masks
+    public const int environmentOnly = 1 << 8;
+    #endregion
+
+    #region FileIO
+    public static bool SaveGame(GameData dataOut)
+    {
+        string fileOutName = Application.persistentDataPath + "/save.dat";
+        BinaryWriter binOut;
+
+        if (File.Exists(fileOutName))
+        {
+            binOut = new BinaryWriter(File.Open(fileOutName));
+        }
+        else
+        {
+            binOut = new BinaryWriter(File.Create(fileOutName));
+        }
+
+        // add data to file
+        binOut.Write(dataOut.playerPosition.x);
+        binOut.Write(dataOut.playerPosition.y);
+        binOut.Write(dataOut.playerPosition.z);
+
+        binOut.Close();
+        return true;
+    }
+
+    public static GameData LoadGame(string fileName)
+    {
+        string fileInName = Application.persistentDataPath + fileName;
+        BinaryReader binIn;
+        GameData dataIn;
+
+        if (File.Exists(fileInName))
+        {
+            binIn = new BinaryWriter(File.Open(fileInName));
+        }
+        else
+        {
+            dataIn.successfulRead = false;
+            return dataIn;
+        }
+        dataIn.playerPosition.x = binIn.ReadSingle();
+        dataIn.playerPosition.y = binIn.ReadSingle();
+        dataIn.playerPosition.z = binIn.ReadSingle();
+
+        binIn.Close();
+        dataIn.successfulRead = true;
+        return dataIn;
+    }
+    #endregion
 
     #region MathUtilities
     // These functions extend the math/logic functionality of the code
@@ -71,13 +135,5 @@ public static class Utilities {
         Vector2 magVec = new Vector2(horizontalValue, verticalValue);
         return magVec.magnitude;
     }
-    #endregion
-
-    #region Constants
-    public const int defInt = int.MinValue;
-    public const float defFloat = Mathf.NegativeInfinity;
-
-    // layer masks
-    public const int environmentOnly = 1 << 8;
     #endregion
 }

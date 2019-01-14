@@ -248,5 +248,15 @@ public class CameraController : MonoBehaviour, Entity {
 		cameraMach.ForceStateChange(currentStateId);
         rangeController.Unpause();
 	}
+
+    public Vector3 GetPosition()
+    {
+        return transform.position;
+    }
+
+    public void SetPosition(Vector3 newPosition)
+    {
+        transform.position = newPosition;
+    }
 	#endregion
 }
