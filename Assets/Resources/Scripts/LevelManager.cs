@@ -23,9 +23,14 @@ public class LevelManager : MonoBehaviour {
             TogglePause();
         }
 
+        // TODO: Move saving and loading into the menu class
         if (paused && Input.GetKeyDown(Controls.Jump))
         {
             SaveGame();
+        }
+        if (paused && Input.GetKeyDown(Controls.Attack))
+        {
+            LoadGame("save.dat");
         }
 
         if (Input.GetKeyDown(KeyCode.Escape))
@@ -71,7 +76,7 @@ public class LevelManager : MonoBehaviour {
     private void SaveGame()
     {
         CharacterMasterController charController = (CharacterMasterController)FindObjectOfType(typeof(CharacterMasterController));
-        GameData dataOut; 
+        GameData dataOut = new GameData(); 
 
         dataOut.playerPosition = charController.GetPosition();
         Utilities.SaveGame(dataOut);

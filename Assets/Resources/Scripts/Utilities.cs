@@ -23,12 +23,12 @@ public static class Utilities {
     #region FileIO
     public static bool SaveGame(GameData dataOut)
     {
-        string fileOutName = Application.persistentDataPath + "/save.dat";
+        string fileOutName = Application.persistentDataPath + Path.DirectorySeparatorChar + "save.dat";
         BinaryWriter binOut;
 
         if (File.Exists(fileOutName))
         {
-            binOut = new BinaryWriter(File.Open(fileOutName));
+            binOut = new BinaryWriter(File.Open(fileOutName, FileMode.Create));
         }
         else
         {
@@ -44,15 +44,15 @@ public static class Utilities {
         return true;
     }
 
-    public static GameData LoadGame(string fileName)
+    public static GameData LoadGame(string fileName = "save.dat")
     {
-        string fileInName = Application.persistentDataPath + fileName;
+        string fileInName = Application.persistentDataPath + Path.DirectorySeparatorChar + fileName;
         BinaryReader binIn;
-        GameData dataIn;
+        GameData dataIn = new GameData();
 
         if (File.Exists(fileInName))
         {
-            binIn = new BinaryWriter(File.Open(fileInName));
+            binIn = new BinaryReader(File.Open(fileInName, FileMode.Open));
         }
         else
         {
