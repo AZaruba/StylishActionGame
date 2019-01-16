@@ -62,7 +62,10 @@ public class CameraController : MonoBehaviour, Entity {
             case (StateId.FOLLOW_TARGET):
             {
                 Vector3 delta = characterController.GetPositionDelta();
-                transform.position += delta;
+                Vector3 cameraDelta = GetForwardTranslation(delta);
+                transform.position += cameraDelta;
+                transform.LookAt(freeMoveRange.transform.position);
+
                 freeMoveRange.transform.position += delta;
                 break;
             }
@@ -232,6 +235,15 @@ public class CameraController : MonoBehaviour, Entity {
     private void MaintainCameraDistance(Vector3 targetPosition)
     {
         transform.position = Vector3.Slerp(transform.position, targetPosition, cameraSmoothingFactor * Time.deltaTime);
+    }
+
+    private Vector3 GetForwardTranslation(Vector3 deltaIn)
+    {
+        Vector3 forwardTranslation = transform.forward.normalized;
+        deltaIn.y = 0;
+        forwardTranslation.y = 0;
+
+        return Vector3.Project(deltaIn, forwardTranslation);
     }
     #endregion
 
