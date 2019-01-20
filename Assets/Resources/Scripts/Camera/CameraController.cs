@@ -12,7 +12,7 @@ public class CameraController : MonoBehaviour, Entity {
 
     [SerializeField] private float maxVerticalAngle;
 
-    [SerializeField] private float cameraSmoothingFactor;
+    [SerializeField] private float cameraInertia;
 
 	[SerializeField] private float resetWaitTime;
 
@@ -29,7 +29,14 @@ public class CameraController : MonoBehaviour, Entity {
     void Start ()
     {
         InitializeStateMachine();
-        freeMoveRange.transform.position = target.transform.position;
+
+        Vector3 moveRangePosition = transform.position;
+        moveRangePosition.y -= heightFromGround;
+        moveRangePosition += Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized * distanceFromTarget;
+        freeMoveRange.transform.position = moveRangePosition;
+        freeMoveRange.transform.up = Vector3.up;
+
+        transform.LookAt(freeMoveRange.transform.position);
 
         rangeController = freeMoveRange.GetComponent<CameraMoveRangeController>();
         if (rangeController == null)
@@ -64,9 +71,12 @@ public class CameraController : MonoBehaviour, Entity {
                 Vector3 delta = characterController.GetPositionDelta();
                 Vector3 cameraDelta = GetForwardTranslation(delta);
                 transform.position += cameraDelta;
-                transform.LookAt(freeMoveRange.transform.position);
-
-                freeMoveRange.transform.position += delta;
+                freeMoveRange.transform.Translate(delta);
+                if (rangeController.GetCurrentState() == StateId.TARGET_OUTSIDE_RANGE)
+                {
+                    transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia);
+                    transform.LookAt(freeMoveRange.transform.position);
+                }
                 break;
             }
             case (StateId.RETURN_TO_CENTER):
@@ -85,9 +95,6 @@ public class CameraController : MonoBehaviour, Entity {
             case (StateId.FREE_LOOK):
             {
                 // for now doesn't need anything
-                Vector3 lookTarget = freeMoveRange.transform.position;
-                lookTarget.y += lookHeightAboveTarget;
-                transform.LookAt(lookTarget);
 				timer += Time.deltaTime;
                 if (characterController.GetCurrentState() == StateId.MOVING)
                 {
@@ -98,9 +105,6 @@ public class CameraController : MonoBehaviour, Entity {
 		    case (StateId.FREE_LOOK_AT_CENTER):
 			{
 				// for now doesn't need anything
-				Vector3 lookTarget = freeMoveRange.transform.position;
-				lookTarget.y += lookHeightAboveTarget;
-				transform.LookAt(lookTarget);
 				timer = 0f;
 				break;
 			}
@@ -111,11 +115,6 @@ public class CameraController : MonoBehaviour, Entity {
             }
             case (StateId.RETURN_TO_CENTER):
             {
-                Vector3 lookTarget = freeMoveRange.transform.position;
-                lookTarget.y += lookHeightAboveTarget;
-                transform.LookAt(lookTarget);
-                MaintainCameraDistance(CalculateRequiredDistance());
-                ResetFreeMoveRangePosition(target.transform.position);
                 break;
             }
         }
@@ -152,7 +151,7 @@ public class CameraController : MonoBehaviour, Entity {
             if (characterController.GetPositionDelta() == Vector3.zero && Vector3.Distance(transform.position, CalculateRequiredDistance()) > 0.1f
 				&& timer > resetWaitTime)
 			{
-				cameraMach.CommandMachine(CommandId.RESET);
+				// cameraMach.CommandMachine(CommandId.RESET);
             }
             else
             {
@@ -222,21 +221,6 @@ public class CameraController : MonoBehaviour, Entity {
      * These functions interpolate the movement over time to make it smooth
      */
 
-    private void ResetFreeMoveRangePosition(Vector3 targetPosition)
-    {
-        freeMoveRange.transform.position = Vector3.Lerp(freeMoveRange.transform.position, targetPosition, cameraSmoothingFactor * Time.deltaTime);
-    }
-
-    /// <summary>
-    /// Ensures that the camera will always remain at the required distance from target during gameplay
-    /// (aside from special circumstances such as set pieces or running into walls)
-    /// </summary>
-    /// <returns></returns>
-    private void MaintainCameraDistance(Vector3 targetPosition)
-    {
-        transform.position = Vector3.Slerp(transform.position, targetPosition, cameraSmoothingFactor * Time.deltaTime);
-    }
-
     private Vector3 GetForwardTranslation(Vector3 deltaIn)
     {
         Vector3 forwardTranslation = transform.forward.normalized;
@@ -244,6 +228,28 @@ public class CameraController : MonoBehaviour, Entity {
         forwardTranslation.y = 0;
 
         return Vector3.Project(deltaIn, forwardTranslation);
+    }
+
+    /// <summary>
+    /// Finds the closest point on the circle around the center of the moveRAnge
+    /// </summary>
+    /// <returns>The closest point on radius.</returns>
+    /// <param name="deltaIn">Delta in.</param>
+    private Vector3 FindClosestPointOnRadius()
+    {
+        Vector3 flatPosition = transform.position;
+        Vector3 rangeFlatPosition = freeMoveRange.transform.position;
+        rangeFlatPosition.y = 0;
+        flatPosition.y = 0;
+
+        // C = Center of circle (so position of moveRange,
+        // P = position of Camera, presumably
+        // V = P - C
+        Vector3 pointOnCircle = flatPosition - rangeFlatPosition;
+        pointOnCircle = pointOnCircle.normalized * distanceFromTarget; // flat radius
+        pointOnCircle += rangeFlatPosition;
+        pointOnCircle.y = transform.position.y;
+        return pointOnCircle;
     }
     #endregion
 

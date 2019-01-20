@@ -14,11 +14,11 @@ public class CharacterMasterController : MonoBehaviour, Entity {
     private StateId currentStateId;
 
     private Vector3 positionDelta; // this is the change in player position for camera use
+    private Vector3 oldPosition;
 
 	// Use this for initializationß
 	void Start () {
         InitializeStateMachine();
-        InitializeVariables();
 	}
 
     // evidently input should be read in update and not fixedUpdate
@@ -35,12 +35,12 @@ public class CharacterMasterController : MonoBehaviour, Entity {
          */
         rBody.velocity = Vector3.zero;
         rBody.angularVelocity = Vector3.zero;
+        oldPosition = transform.position;
 
         switch (stateMach.GetCurrentStateId())
         {
             case (StateId.IDLE):
             {
-                positionDelta = Vector3.zero;
                 // do nothing
                 break;
             }
@@ -162,15 +162,10 @@ public class CharacterMasterController : MonoBehaviour, Entity {
     }
     #endregion
 
-    private void InitializeVariables()
-    {
-        positionDelta = Vector3.zero;
-    }
-
     #region GettersAndSetters
     public Vector3 GetPositionDelta()
     {
-        return positionDelta;
+        return transform.position - oldPosition;
     }
 
     public StateId GetCurrentState()
