@@ -57,7 +57,7 @@ public static class Controls {
                 break;
         }
         
-        Controls.SetDeadzone(0.2f);
+        Controls.SetDeadzone(0.5f);
     }
 
     public static void SetJump(KeyCode kc)

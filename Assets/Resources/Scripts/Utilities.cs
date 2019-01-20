@@ -115,25 +115,54 @@ public static class Utilities {
     /// <returns>Returns the position of the stick as an angle between -180 and 180 degrees or a neutral position value</returns>
     public static float GetMovementStickPosition()
     {
-        if (Mathf.Abs(Input.GetAxis("Vertical")) > Controls.deadZone || Mathf.Abs(Input.GetAxis("Horizontal")) > Controls.deadZone)
-            return Mathf.Atan2(Input.GetAxis("Vertical"), -1 * Input.GetAxis("Horizontal"));
+        float Vertical = InputBuffer.moveVertical;
+        float Horizontal = InputBuffer.moveHorizontal;
+
+        if (Mathf.Abs(Vertical) > 0 || Mathf.Abs(Horizontal) > 0)
+            return Mathf.Atan2(Vertical, -1 * Horizontal);
+
         return Controls.neutralStickPosition; // return a value well outside of the range of Atan2
     }
+
+    public static float GetCameraStickPosition()
+    {
+        float camVertical = InputBuffer.cameraVertical;
+        float camHorizontal = InputBuffer.cameraHorizontal;
+
+        if (Mathf.Abs(camVertical) > 0 || Mathf.Abs(camHorizontal) > 0)
+            return Mathf.Atan2(camVertical, -1 * camHorizontal);
+
+        return Controls.neutralStickPosition; // return a value well outside of the range of Atan2
+    }
+
     public static float GetMovementStickMagnitude()
     {
-        float horizontalValue = Mathf.Abs(Input.GetAxis("Horizontal"));
-        if (horizontalValue < Controls.deadZone)
-        {
-            horizontalValue = 0f;
-        }
+        float horizontalValue = Mathf.Abs(InputBuffer.moveHorizontal);
+        float verticalValue = Mathf.Abs(InputBuffer.moveVertical);
 
-        float verticalValue = Mathf.Abs(Input.GetAxis("Vertical"));
-        if (verticalValue < Controls.deadZone)
-        {
-            verticalValue = 0f;
-        }
         Vector2 magVec = new Vector2(horizontalValue, verticalValue);
         return magVec.magnitude;
     }
+
+    public static float GetCameraStickMagnitude()
+    {
+        float horizontalValue = Mathf.Abs(InputBuffer.cameraHorizontal);
+        float verticalValue = Mathf.Abs(InputBuffer.cameraVertical);
+
+        Vector2 magVec = new Vector2(horizontalValue, verticalValue);
+        return magVec.magnitude;
+    }
+
+    /* Added but currently unneeded
+    public static Vector3 ConvertStickToVector(float degree)
+    {
+        Vector3 direction = new Vector3();
+
+        direction.x = -1 * Mathf.Cos(degree) + Mathf.Sin(degree);
+        direction.z = Mathf.Sin(degree) + Mathf.Cos(degree);
+
+        return direction;
+    }
+    */
     #endregion
 }

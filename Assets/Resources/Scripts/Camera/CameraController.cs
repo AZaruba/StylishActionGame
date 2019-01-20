@@ -13,6 +13,7 @@ public class CameraController : MonoBehaviour, Entity {
     [SerializeField] private float maxVerticalAngle;
 
     [SerializeField] private float cameraInertia;
+    [SerializeField] private float cameraMoveSpeed;
 
 	[SerializeField] private float resetWaitTime;
 
@@ -51,6 +52,7 @@ public class CameraController : MonoBehaviour, Entity {
             target.AddComponent<CharacterMasterController>();
             characterController = target.GetComponent<CharacterMasterController>();
         }
+
 		timer = 0f;
 	}
 
@@ -58,14 +60,10 @@ public class CameraController : MonoBehaviour, Entity {
     {
         switch (cameraMach.GetCurrentStateId())
         {
-            case (StateId.FREE_LOOK):
+            case (StateId.STATIONARY):
             {
                 break;
             }
-		    case (StateId.FREE_LOOK_AT_CENTER):
-			{
-				break;
-			}
             case (StateId.FOLLOW_TARGET):
             {
                 Vector3 delta = characterController.GetPositionDelta();
@@ -83,6 +81,21 @@ public class CameraController : MonoBehaviour, Entity {
             {
                 break;
             }
+            case (StateId.FREE_LOOK):
+            {
+                Vector3 delta = characterController.GetPositionDelta();
+                RotateCameraHorizontal(InputBuffer.cameraHorizontal);
+                transform.position += delta;
+                freeMoveRange.transform.position += delta;
+                break;
+            }
+            case (StateId.WAITING):
+            {
+                Vector3 delta = characterController.GetPositionDelta();
+                transform.position += delta;
+                freeMoveRange.transform.position += delta;
+                break;
+            }
         }
     }
 
@@ -92,29 +105,22 @@ public class CameraController : MonoBehaviour, Entity {
 
         switch (cameraMach.GetCurrentStateId())
         {
-            case (StateId.FREE_LOOK):
+            case (StateId.STATIONARY):
             {
-                // for now doesn't need anything
-				timer += Time.deltaTime;
-                if (characterController.GetCurrentState() == StateId.MOVING)
-                {
-                    timer = 0f;
-                }
                 break;
             }
-		    case (StateId.FREE_LOOK_AT_CENTER):
-			{
-				// for now doesn't need anything
-				timer = 0f;
-				break;
-			}
             case (StateId.FOLLOW_TARGET):
             {
-				timer = 0f;
                 break;
             }
             case (StateId.RETURN_TO_CENTER):
             {
+                cameraMach.CommandMachine(CommandId.STAY_PUT);
+                break;
+            }
+            case (StateId.WAITING):
+            {
+                timer += Time.deltaTime;
                 break;
             }
         }
@@ -122,20 +128,28 @@ public class CameraController : MonoBehaviour, Entity {
 
     private void InitializeStateMachine()
     {
-        cameraMach = new StateMachine(StateId.FREE_LOOK);
+        cameraMach = new StateMachine(StateId.STATIONARY);
 
+        cameraMach.AddState(StateId.FREE_LOOK);
         cameraMach.AddState(StateId.FOLLOW_TARGET);
+        cameraMach.AddState(StateId.WAITING);
         cameraMach.AddState(StateId.RETURN_TO_CENTER);
-		cameraMach.AddState(StateId.FREE_LOOK_AT_CENTER);
 
-        cameraMach.LinkStates(StateId.FREE_LOOK, StateId.FOLLOW_TARGET, CommandId.FOLLOW);
-		cameraMach.LinkStates(StateId.FREE_LOOK_AT_CENTER, StateId.FOLLOW_TARGET, CommandId.FOLLOW);
-        cameraMach.LinkStates(StateId.FOLLOW_TARGET, StateId.FREE_LOOK, CommandId.STAY_PUT);
-        cameraMach.LinkStates(StateId.RETURN_TO_CENTER, StateId.FOLLOW_TARGET, CommandId.FOLLOW); // if player is on edge of free move range then moves outside again
-		cameraMach.LinkStates(StateId.RETURN_TO_CENTER, StateId.FREE_LOOK_AT_CENTER, CommandId.STAY_PUT);
-		cameraMach.LinkAllStates(StateId.RETURN_TO_CENTER, CommandId.RESET);
+        cameraMach.LinkStates(StateId.STATIONARY, StateId.FREE_LOOK, CommandId.ORBIT);
+        cameraMach.LinkStates(StateId.STATIONARY, StateId.FOLLOW_TARGET, CommandId.FOLLOW);
 
-		cameraMach.AddPauseState();
+        cameraMach.LinkStates(StateId.FREE_LOOK, StateId.WAITING, CommandId.WAIT);
+
+        cameraMach.LinkStates(StateId.FOLLOW_TARGET, StateId.STATIONARY, CommandId.STAY_PUT);
+        cameraMach.LinkStates(StateId.FOLLOW_TARGET, StateId.FREE_LOOK, CommandId.ORBIT);
+
+        cameraMach.LinkStates(StateId.WAITING, StateId.RETURN_TO_CENTER, CommandId.TIME_OUT);
+        cameraMach.LinkStates(StateId.WAITING, StateId.FREE_LOOK, CommandId.ORBIT);
+
+        cameraMach.LinkStates(StateId.RETURN_TO_CENTER, StateId.STATIONARY, CommandId.STAY_PUT);
+        cameraMach.LinkStates(StateId.RETURN_TO_CENTER, StateId.FREE_LOOK, CommandId.ORBIT);
+
+        cameraMach.AddPauseState();
     }
 
     private void UpdateStateMachine()
@@ -145,6 +159,21 @@ public class CameraController : MonoBehaviour, Entity {
 		{
 			return;
 		}
+
+        if (Utilities.GetCameraStickPosition() != Controls.neutralStickPosition)
+        {
+            cameraMach.CommandMachine(CommandId.ORBIT);
+        }
+        else
+        {
+            cameraMach.CommandMachine(CommandId.WAIT);
+        }
+
+        if (timer > resetWaitTime)
+        {
+            timer = 0;
+            cameraMach.CommandMachine(CommandId.TIME_OUT);
+        }
 
         if (rangeController.GetCurrentState() == StateId.TARGET_INSIDE_RANGE)
         {
@@ -253,8 +282,20 @@ public class CameraController : MonoBehaviour, Entity {
     }
     #endregion
 
-	#region StateSaving
-	public void Pause()
+    #region CameraRotation
+    private void RotateCameraHorizontal(float degree)
+    {
+        transform.RotateAround(freeMoveRange.transform.position, Vector3.up, degree * cameraMoveSpeed * Time.deltaTime);
+    }
+
+    private void RotateCameraVertical(float degree)
+    {
+        transform.RotateAround(freeMoveRange.transform.position, transform.right, degree * cameraMoveSpeed * Time.deltaTime);
+    }
+    #endregion
+
+    #region StateSaving
+    public void Pause()
 	{
 		currentStateId = cameraMach.GetCurrentStateId();
 		cameraMach.CommandMachine(CommandId.PAUSE);

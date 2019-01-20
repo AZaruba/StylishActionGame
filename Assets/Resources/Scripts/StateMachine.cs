@@ -447,9 +447,12 @@ public enum CommandId
     // camera commands
     FOLLOW,
     STAY_PUT,
+    ORBIT,
     RESET,
     LOCK_ON,
     UNLOCK,
+    TIME_OUT,
+    // WAIT
     // look range commands
     FOLLOW_TARGET,
     // RESET
@@ -491,11 +494,12 @@ public enum StateId
     COMBO_3_2, // launch (X)
 
     // camera states
+    STATIONARY,
     FREE_LOOK,
     FOLLOW_TARGET,
-    LOCK_ON_OBJECT,
+    WAITING,
     RETURN_TO_CENTER,
-	FREE_LOOK_AT_CENTER,
+	LOCK_ON,
     // look range states
     TARGET_INSIDE_RANGE,
     TARGET_OUTSIDE_RANGE,
