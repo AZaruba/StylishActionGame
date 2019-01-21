@@ -497,6 +497,7 @@ public enum StateId
     STATIONARY,
     FREE_LOOK,
     FOLLOW_TARGET,
+    FREE_LOOK_FOLLOW,
     WAITING,
     RETURN_TO_CENTER,
 	LOCK_ON,

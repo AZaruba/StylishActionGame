@@ -72,7 +72,7 @@ public class CameraController : MonoBehaviour, Entity {
                 freeMoveRange.transform.Translate(delta);
                 if (rangeController.GetCurrentState() == StateId.TARGET_OUTSIDE_RANGE)
                 {
-                    transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia);
+                    transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia * Time.fixedDeltaTime);
                     transform.LookAt(freeMoveRange.transform.position);
                 }
                 break;
@@ -87,6 +87,9 @@ public class CameraController : MonoBehaviour, Entity {
                 RotateCameraHorizontal(InputBuffer.cameraHorizontal);
                 transform.position += delta;
                 freeMoveRange.transform.position += delta;
+                freeMoveRange.transform.position = ApproachTarget(freeMoveRange.transform.position);
+                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia * Time.fixedDeltaTime);
+                transform.LookAt(freeMoveRange.transform.position);
                 break;
             }
             case (StateId.WAITING):
@@ -94,6 +97,9 @@ public class CameraController : MonoBehaviour, Entity {
                 Vector3 delta = characterController.GetPositionDelta();
                 transform.position += delta;
                 freeMoveRange.transform.position += delta;
+                freeMoveRange.transform.position = ApproachTarget(freeMoveRange.transform.position);
+                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia * Time.fixedDeltaTime);
+                transform.LookAt(freeMoveRange.transform.position);
                 break;
             }
         }
@@ -279,6 +285,11 @@ public class CameraController : MonoBehaviour, Entity {
         pointOnCircle += rangeFlatPosition;
         pointOnCircle.y = transform.position.y;
         return pointOnCircle;
+    }
+
+    private Vector3 ApproachTarget(Vector3 position)
+    {
+        return Vector3.Lerp(position, target.transform.position, cameraInertia * Time.fixedDeltaTime);
     }
     #endregion
 

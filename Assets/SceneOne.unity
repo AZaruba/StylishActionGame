@@ -653,7 +653,7 @@ MonoBehaviour:
   distanceFromTarget: 6
   lookHeightAboveTarget: 0
   maxVerticalAngle: 0
-  cameraInertia: 0
+  cameraInertia: 1
   cameraMoveSpeed: 40
   resetWaitTime: 2
   target: {fileID: 1828475834}
