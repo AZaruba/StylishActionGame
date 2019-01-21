@@ -25,11 +25,13 @@ public class CameraController : MonoBehaviour, Entity {
     private StateMachine cameraMach;
 	private StateId currentStateId;
 	private float timer;
+    private Vector3 lookAboveVector;
 
     // Use this for initialization
     void Start ()
     {
         InitializeStateMachine();
+        lookAboveVector = new Vector3(0, lookHeightAboveTarget, 0);
 
         Vector3 moveRangePosition = transform.position;
         moveRangePosition.y -= heightFromGround;
@@ -62,6 +64,8 @@ public class CameraController : MonoBehaviour, Entity {
         {
             case (StateId.STATIONARY):
             {
+                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia * Time.fixedDeltaTime);
+                transform.LookAt(freeMoveRange.transform.position + lookAboveVector);
                 break;
             }
             case (StateId.FOLLOW_TARGET):
@@ -73,7 +77,7 @@ public class CameraController : MonoBehaviour, Entity {
                 if (rangeController.GetCurrentState() == StateId.TARGET_OUTSIDE_RANGE)
                 {
                     transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia * Time.fixedDeltaTime);
-                    transform.LookAt(freeMoveRange.transform.position);
+                    transform.LookAt(freeMoveRange.transform.position + lookAboveVector);
                 }
                 break;
             }
@@ -89,7 +93,7 @@ public class CameraController : MonoBehaviour, Entity {
                 freeMoveRange.transform.position += delta;
                 freeMoveRange.transform.position = ApproachTarget(freeMoveRange.transform.position);
                 transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia * Time.fixedDeltaTime);
-                transform.LookAt(freeMoveRange.transform.position);
+                transform.LookAt(freeMoveRange.transform.position + lookAboveVector);
                 break;
             }
             case (StateId.WAITING):
@@ -99,7 +103,7 @@ public class CameraController : MonoBehaviour, Entity {
                 freeMoveRange.transform.position += delta;
                 freeMoveRange.transform.position = ApproachTarget(freeMoveRange.transform.position);
                 transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia * Time.fixedDeltaTime);
-                transform.LookAt(freeMoveRange.transform.position);
+                transform.LookAt(freeMoveRange.transform.position + lookAboveVector);
                 break;
             }
         }

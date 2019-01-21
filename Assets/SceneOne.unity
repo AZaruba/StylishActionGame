@@ -651,7 +651,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   heightFromGround: 3
   distanceFromTarget: 6
-  lookHeightAboveTarget: 0
+  lookHeightAboveTarget: 1
   maxVerticalAngle: 0
   cameraInertia: 1
   cameraMoveSpeed: 40
