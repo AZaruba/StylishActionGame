@@ -26,8 +26,10 @@ public class InputBuffer : MonoBehaviour {
     {
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
+        Vector2 moveInput = new Vector2(horizontalInput, verticalInput);
         float camHorizontalInput = Input.GetAxis("RHorizontal");
         float camVerticalInput = Input.GetAxis("RVertical");
+        Vector2 camInput = new Vector2(camHorizontalInput, camVerticalInput);
 
         attackPressed = Input.GetKeyDown(Controls.Attack);
         attackDown = Input.GetKey(Controls.Attack);
@@ -38,24 +40,25 @@ public class InputBuffer : MonoBehaviour {
 
         pausePressed = Input.GetKeyDown(Controls.Pause);
 
-        if (Mathf.Abs(horizontalInput) > Controls.deadZone)
+        if (moveInput.magnitude > Controls.deadZone)
+        {
             moveHorizontal = horizontalInput;
-        else
-            moveHorizontal = 0.0f; // return a value well outside of the range of Atan2
-
-        if (Mathf.Abs(verticalInput) > Controls.deadZone)
             moveVertical = verticalInput;
+        }
         else
-            moveVertical = 0.0f; // return a value well outside of the range of Atan2
-
-        if (Mathf.Abs(camHorizontalInput) > Controls.deadZone)
+        {
+            moveHorizontal = 0.0f;
+            moveVertical = 0.0f;
+        }
+        if (camInput.magnitude > Controls.deadZone)
+        {
             cameraHorizontal = camHorizontalInput;
-        else
-            cameraHorizontal = 0.0f; // return a value well outside of the range of Atan2
-
-        if (Mathf.Abs(camVerticalInput) > Controls.deadZone)
             cameraVertical = camVerticalInput;
+        }
         else
-            cameraVertical = 0.0f; // return a value well outside of the range of Atan2
+        {
+            cameraHorizontal = 0.0f;
+            cameraVertical = 0.0f;
+        }
     }
 }

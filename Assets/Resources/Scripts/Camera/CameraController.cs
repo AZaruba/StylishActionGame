@@ -74,21 +74,19 @@ public class CameraController : MonoBehaviour, Entity {
                 Vector3 cameraDelta = GetForwardTranslation(delta);
                 transform.position += cameraDelta;
                 freeMoveRange.transform.Translate(delta);
-                if (rangeController.GetCurrentState() == StateId.TARGET_OUTSIDE_RANGE)
-                {
-                    transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia * Time.fixedDeltaTime);
-                    transform.LookAt(freeMoveRange.transform.position + lookAboveVector);
-                }
+                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia * Time.fixedDeltaTime);
+                transform.LookAt(freeMoveRange.transform.position + lookAboveVector);
                 break;
             }
             case (StateId.RETURN_TO_CENTER):
             {
+                // return to center is where we "apply the brakes"
                 break;
             }
             case (StateId.FREE_LOOK):
             {
-                Vector3 delta = characterController.GetPositionDelta();
                 RotateCameraHorizontal(InputBuffer.cameraHorizontal);
+                Vector3 delta = characterController.GetPositionDelta();
                 transform.position += delta;
                 freeMoveRange.transform.position += delta;
                 freeMoveRange.transform.position = ApproachTarget(freeMoveRange.transform.position);
