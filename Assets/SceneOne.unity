@@ -301,7 +301,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 1.5
+  m_Radius: 1
   m_Height: 5
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
@@ -653,8 +653,8 @@ MonoBehaviour:
   distanceFromTarget: 6
   lookHeightAboveTarget: 1
   maxVerticalAngle: 0
-  cameraInertia: 1
-  cameraMoveSpeed: 40
+  cameraInertia: 0.5
+  cameraMoveSpeed: 60
   resetWaitTime: 2
   target: {fileID: 1828475834}
   characterController: {fileID: 1828475845}

@@ -64,7 +64,8 @@ public class CameraController : MonoBehaviour, Entity {
         {
             case (StateId.STATIONARY):
             {
-                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia * Time.fixedDeltaTime);
+                freeMoveRange.transform.position = Vector3.Lerp(freeMoveRange.transform.position, target.transform.position, 0.1f);
+                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia);
                 transform.LookAt(freeMoveRange.transform.position + lookAboveVector);
                 break;
             }
@@ -74,7 +75,7 @@ public class CameraController : MonoBehaviour, Entity {
                 Vector3 cameraDelta = GetForwardTranslation(delta);
                 transform.position += cameraDelta;
                 freeMoveRange.transform.Translate(delta);
-                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia * Time.fixedDeltaTime);
+                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia);
                 transform.LookAt(freeMoveRange.transform.position + lookAboveVector);
                 break;
             }
@@ -90,7 +91,7 @@ public class CameraController : MonoBehaviour, Entity {
                 transform.position += delta;
                 freeMoveRange.transform.position += delta;
                 freeMoveRange.transform.position = ApproachTarget(freeMoveRange.transform.position);
-                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia * Time.fixedDeltaTime);
+                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia);
                 transform.LookAt(freeMoveRange.transform.position + lookAboveVector);
                 break;
             }
@@ -100,7 +101,7 @@ public class CameraController : MonoBehaviour, Entity {
                 transform.position += delta;
                 freeMoveRange.transform.position += delta;
                 freeMoveRange.transform.position = ApproachTarget(freeMoveRange.transform.position);
-                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia * Time.fixedDeltaTime);
+                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia);
                 transform.LookAt(freeMoveRange.transform.position + lookAboveVector);
                 break;
             }
