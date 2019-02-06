@@ -652,7 +652,7 @@ MonoBehaviour:
   heightFromGround: 3
   distanceFromTarget: 6
   lookHeightAboveTarget: 1
-  maxVerticalAngle: 0
+  maxVerticalAngle: 50
   cameraInertia: 0.5
   cameraMoveSpeed: 60
   resetWaitTime: 2
@@ -1137,8 +1137,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   weightFactor: 0.6
-  jumpVelocity: 0.3
+  jumpVelocity: 0.2
   terminalVelocity: 2
+  jumpForceTime: 0.25
   objectCollider: {fileID: 1828475836}
 --- !u!114 &1828475844
 MonoBehaviour:

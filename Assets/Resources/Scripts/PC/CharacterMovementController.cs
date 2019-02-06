@@ -55,6 +55,7 @@ public class CharacterMovementController : MonoBehaviour {
     {
         Vector3 direction = new Vector3();
         Vector3 camDirection = GetCameraOrientation();
+        camDirection.Normalize();
 
         direction.x = -1 * camDirection.z * Mathf.Cos(rotationDegree) + camDirection.x * Mathf.Sin(rotationDegree);
         direction.z = camDirection.z * Mathf.Sin(rotationDegree) + camDirection.x * Mathf.Cos(rotationDegree);

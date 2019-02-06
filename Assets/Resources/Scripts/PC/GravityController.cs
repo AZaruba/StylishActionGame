@@ -7,8 +7,10 @@ public class GravityController : MonoBehaviour {
     public float weightFactor;
     public float jumpVelocity;
     public float terminalVelocity;
+    [SerializeField] private float jumpForceTime;
 
     private bool grounded;
+    private float jumpTimer;
 
     private Vector3 verticalTranslation;
     private Vector3 projectedVector;
@@ -39,6 +41,19 @@ public class GravityController : MonoBehaviour {
         else
         {
             // gravity stuff
+            if (InputBuffer.jumpDown && verticalTranslation.y > 0f)
+            {
+                jumpTimer += Time.fixedDeltaTime;
+                if (jumpTimer < jumpForceTime)
+                {
+                    return verticalTranslation;
+                }
+            }
+            else if (!InputBuffer.jumpDown)
+            {
+                jumpTimer = jumpForceTime;
+            }
+
             verticalTranslation.y -= weightFactor * Time.fixedDeltaTime;
             if (verticalTranslation.y <= terminalVelocity * -1)
             {
@@ -125,5 +140,12 @@ public class GravityController : MonoBehaviour {
     {
         grounded = false;
         verticalTranslation.y = jumpVel;
+    }
+
+    public void Land()
+    {
+        grounded = true;
+        verticalTranslation.y = 0f;
+        jumpTimer = 0f;
     }
 }

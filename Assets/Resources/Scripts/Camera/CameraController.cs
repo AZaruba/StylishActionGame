@@ -66,6 +66,7 @@ public class CameraController : MonoBehaviour, Entity {
             {
                 freeMoveRange.transform.position = Vector3.Lerp(freeMoveRange.transform.position, target.transform.position, 0.1f);
                 transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia);
+                transform.position += GetVerticalTranslation();
                 transform.LookAt(freeMoveRange.transform.position + lookAboveVector);
                 break;
             }
@@ -76,6 +77,7 @@ public class CameraController : MonoBehaviour, Entity {
                 transform.position += cameraDelta;
                 freeMoveRange.transform.Translate(delta);
                 transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia);
+                transform.position += GetVerticalTranslation();
                 transform.LookAt(freeMoveRange.transform.position + lookAboveVector);
                 break;
             }
@@ -87,11 +89,14 @@ public class CameraController : MonoBehaviour, Entity {
             case (StateId.FREE_LOOK):
             {
                 RotateCameraHorizontal(InputBuffer.cameraHorizontal);
+                RotateCameraVertical(InputBuffer.cameraVertical);
+
                 Vector3 delta = characterController.GetPositionDelta();
                 transform.position += delta;
                 freeMoveRange.transform.position += delta;
                 freeMoveRange.transform.position = ApproachTarget(freeMoveRange.transform.position);
                 transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia);
+                transform.position += GetVerticalTranslation();
                 transform.LookAt(freeMoveRange.transform.position + lookAboveVector);
                 break;
             }
@@ -102,10 +107,12 @@ public class CameraController : MonoBehaviour, Entity {
                 freeMoveRange.transform.position += delta;
                 freeMoveRange.transform.position = ApproachTarget(freeMoveRange.transform.position);
                 transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia);
+                transform.position += GetVerticalTranslation();
                 transform.LookAt(freeMoveRange.transform.position + lookAboveVector);
                 break;
             }
         }
+
     }
 
     private void Update()
@@ -268,6 +275,24 @@ public class CameraController : MonoBehaviour, Entity {
         return Vector3.Project(deltaIn, forwardTranslation);
     }
 
+    private Vector3 GetVerticalTranslation()
+    {
+        Vector3 vertTranslation = characterController.GetVerticalDelta();
+        Vector3 flatForward = transform.forward;
+        flatForward.y = 0;
+        float checkAngle = Vector3.SignedAngle(flatForward, transform.forward, transform.right);
+
+        if (checkAngle >= maxVerticalAngle  && vertTranslation.y < 0)
+        {
+            return vertTranslation;
+        }
+        else if (checkAngle <= -1 * maxVerticalAngle && vertTranslation.y > 0)
+        {
+            return vertTranslation;
+        }
+        return Vector3.zero;
+    }
+
     /// <summary>
     /// Finds the closest point on the circle around the center of the moveRAnge
     /// </summary>
@@ -277,11 +302,11 @@ public class CameraController : MonoBehaviour, Entity {
     {
         Vector3 flatPosition = transform.position;
         Vector3 rangeFlatPosition = freeMoveRange.transform.position;
-        rangeFlatPosition.y = 0;
-        flatPosition.y = 0;
+        // rangeFlatPosition.y = 0;
+        // flatPosition.y = 0;
 
         // C = Center of circle (so position of moveRange,
-        // P = position of Camera, presumably
+        // P = position of Camera
         // V = P - C
         Vector3 pointOnCircle = flatPosition - rangeFlatPosition;
         pointOnCircle = pointOnCircle.normalized * distanceFromTarget; // flat radius
@@ -304,7 +329,13 @@ public class CameraController : MonoBehaviour, Entity {
 
     private void RotateCameraVertical(float degree)
     {
-        transform.RotateAround(freeMoveRange.transform.position, transform.right, degree * cameraMoveSpeed * Time.deltaTime);
+        Vector3 flatForward = transform.forward;
+        flatForward.y = 0;
+        float checkAngle = Vector3.SignedAngle(flatForward, transform.forward, transform.right);
+        if (checkAngle < maxVerticalAngle && degree < 0 || checkAngle >  -1 * maxVerticalAngle && degree > 0)
+        {
+            transform.RotateAround(freeMoveRange.transform.position, transform.right, -1 * degree * cameraMoveSpeed * Time.deltaTime);
+        }
     }
     #endregion
 

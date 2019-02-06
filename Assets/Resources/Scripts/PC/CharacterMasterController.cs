@@ -151,6 +151,7 @@ public class CharacterMasterController : MonoBehaviour, Entity {
         else
         {
             stateMach.CommandMachine(CommandId.LAND);
+            gravityController.Land();
         }
         /* commented out until we get attacking worked out
         if (Input.GetKeyDown(Controls.Attack))
@@ -166,6 +167,10 @@ public class CharacterMasterController : MonoBehaviour, Entity {
     public Vector3 GetPositionDelta()
     {
         return transform.position - oldPosition;
+    }
+    public Vector3 GetVerticalDelta()
+    {
+        return gravityController.GetVertTranslation();
     }
 
     public StateId GetCurrentState()
