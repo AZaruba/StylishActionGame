@@ -141,9 +141,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f148dbf919bc6344b9eeab5d5b155407, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sphereEnemy: {fileID: 4506423226497214, guid: 8a3a6813ff1165e4aa162fc330bf3f78,
-    type: 2}
-  pcSpawn: {fileID: 0}
 --- !u!4 &204628026
 Transform:
   m_ObjectHideFlags: 0
@@ -386,7 +383,7 @@ CapsuleCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 1
-  m_Height: 5
+  m_Height: 3
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &663025091
@@ -817,10 +814,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 582c6aeb010fc664482187fae5680b52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  heightFromGround: 3
-  distanceFromTarget: 6
+  heightFromGround: 2
+  distanceFromTarget: 10
   lookHeightAboveTarget: 1
-  maxVerticalAngle: 40
+  maxVerticalAngle: 30
   cameraInertia: 0.5
   cameraMoveSpeed: 60
   resetWaitTime: 2

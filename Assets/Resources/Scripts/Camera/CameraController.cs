@@ -31,15 +31,7 @@ public class CameraController : MonoBehaviour, Entity {
     void Start ()
     {
         InitializeStateMachine();
-        lookAboveVector = new Vector3(0, lookHeightAboveTarget, 0);
-
-        Vector3 moveRangePosition = transform.position;
-        moveRangePosition.y -= heightFromGround;
-        moveRangePosition += Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized * distanceFromTarget;
-        freeMoveRange.transform.position = moveRangePosition;
-        freeMoveRange.transform.up = Vector3.up;
-
-        transform.LookAt(freeMoveRange.transform.position);
+        InitializeCameraPosition();
 
         rangeController = freeMoveRange.GetComponent<CameraMoveRangeController>();
         if (rangeController == null)
@@ -60,6 +52,8 @@ public class CameraController : MonoBehaviour, Entity {
 
     private void FixedUpdate()
     {
+        Vector3 oldFMPosition = freeMoveRange.transform.position + lookAboveVector;
+        
         switch (cameraMach.GetCurrentStateId())
         {
             case (StateId.STATIONARY):
@@ -69,22 +63,25 @@ public class CameraController : MonoBehaviour, Entity {
                 Vector3 moveRangeDelta = Vector3.Lerp(freeMoveRange.transform.position, target.transform.position, 0.1f);
 
                 transform.position += cameraDelta;
-                transform.position += GetVerticalTranslation(delta.y);
+                
                 freeMoveRange.transform.position = moveRangeDelta;
                 transform.position = Vector3.Lerp(transform.position, FindClosestFlatPointOnRadius(), cameraInertia * Time.deltaTime * 2);
-                transform.LookAt(freeMoveRange.transform.position + lookAboveVector);
+                transform.position += GetVerticalTranslation(moveRangeDelta.y);
+                transform.LookAt(Vector3.Lerp(oldFMPosition, freeMoveRange.transform.position + lookAboveVector, cameraInertia));
                 break;
             }
             case (StateId.FOLLOW_TARGET):
             {
+                // we need to fix the case in which the player outpaces the moveRange
                 Vector3 delta = characterController.GetPositionDelta();
                 Vector3 cameraDelta = GetForwardTranslation(delta);
 
                 transform.position += cameraDelta;
-                transform.position += GetVerticalTranslation(delta.y);
-                freeMoveRange.transform.Translate(delta);
+
+                freeMoveRange.transform.position += delta;
                 transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia);
-                transform.LookAt(freeMoveRange.transform.position + lookAboveVector);
+                transform.position += GetVerticalTranslation(delta.y);
+                transform.LookAt(Vector3.Lerp(oldFMPosition, freeMoveRange.transform.position + lookAboveVector, cameraInertia));
                 break;
             }
             case (StateId.RETURN_TO_CENTER):
@@ -98,27 +95,30 @@ public class CameraController : MonoBehaviour, Entity {
                 RotateCameraVertical(InputBuffer.cameraVertical);
 
                 Vector3 delta = characterController.GetPositionDelta();
+                Vector3 cameraDelta = delta;
+                cameraDelta.y = 0;
                 Vector3 moveRangeDelta = ApproachTarget(freeMoveRange.transform.position + delta);
 
-                transform.position += delta;
-                transform.position += GetVerticalTranslation(delta.y);
-                freeMoveRange.transform.position += delta;
+                transform.position += cameraDelta;
+                
                 freeMoveRange.transform.position = moveRangeDelta;
                 transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia);
-                transform.LookAt(freeMoveRange.transform.position + lookAboveVector);
+                transform.position += GetVerticalTranslation(moveRangeDelta.y);
+                transform.LookAt(Vector3.Lerp(oldFMPosition, freeMoveRange.transform.position + lookAboveVector, cameraInertia));
                 break;
             }
             case (StateId.WAITING):
             {
                 Vector3 delta = characterController.GetPositionDelta();
+                Vector3 cameraDelta = delta;
+                cameraDelta.y = 0;
                 Vector3 moveRangeDelta = ApproachTarget(freeMoveRange.transform.position + delta);
 
-                transform.position += GetVerticalTranslation(delta.y);
-                transform.position += delta;
-                freeMoveRange.transform.position += delta;
+                transform.position += cameraDelta;
                 freeMoveRange.transform.position = moveRangeDelta;
                 transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia);
-                transform.LookAt(freeMoveRange.transform.position + lookAboveVector);
+                transform.position += GetVerticalTranslation(moveRangeDelta.y);
+                transform.LookAt(Vector3.Lerp(oldFMPosition, freeMoveRange.transform.position + lookAboveVector, cameraInertia));
                 break;
             }
         }
@@ -178,6 +178,24 @@ public class CameraController : MonoBehaviour, Entity {
         cameraMach.AddPauseState();
     }
 
+    private void InitializeCameraPosition()
+    {
+        Vector3 cameraPosition = target.transform.position;
+        cameraPosition -= Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized * distanceFromTarget;
+        cameraPosition.y += heightFromGround;
+        transform.position = cameraPosition;
+        transform.up = Vector3.up;
+        lookAboveVector = new Vector3(0, lookHeightAboveTarget, 0);
+
+        Vector3 moveRangePosition = transform.position;
+        moveRangePosition.y -= heightFromGround;
+        moveRangePosition += Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized * distanceFromTarget;
+        freeMoveRange.transform.position = moveRangePosition;
+        freeMoveRange.transform.up = Vector3.up;
+
+        transform.LookAt(freeMoveRange.transform.position);
+    }
+
     private void UpdateStateMachine()
     {
 		// pausing should short circuit any updates
@@ -232,11 +250,11 @@ public class CameraController : MonoBehaviour, Entity {
 
         if (checkAngle >= maxVerticalAngle  && vertTranslation.y < 0)
         {
-            return new Vector3(0, moveRangeHeightDelta, 0);
+            return vertTranslation; // new Vector3(0, moveRangeHeightDelta, 0);
         }
         else if (vertTranslation.y > 0)
         {
-            return new Vector3(0, moveRangeHeightDelta, 0);
+            return vertTranslation; // new Vector3(0, moveRangeHeightDelta, 0);
         }
         return Vector3.zero;
     }
@@ -259,7 +277,6 @@ public class CameraController : MonoBehaviour, Entity {
         }
         else if (checkAngle < -1 * maxVerticalAngle)
         {
-            Debug.Log("huh");
             flatPosition = Quaternion.AngleAxis(checkAngle + maxVerticalAngle, transform.right) * (flatPosition - rangeFlatPosition) + flatPosition;
         }
 
@@ -291,7 +308,6 @@ public class CameraController : MonoBehaviour, Entity {
         }
         else if (checkAngle < -1 * maxVerticalAngle)
         {
-            Debug.Log("huh");
             flatPosition = Quaternion.AngleAxis(checkAngle + maxVerticalAngle, transform.right) * flatPosition;
         }
 

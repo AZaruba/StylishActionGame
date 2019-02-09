@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class LevelManager : MonoBehaviour {
 
-    public Transform sphereEnemy;
-    public Transform pcSpawn;
-
     private bool paused;
 
 	// Use this for initialization
