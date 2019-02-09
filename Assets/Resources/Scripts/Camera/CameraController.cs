@@ -67,10 +67,11 @@ public class CameraController : MonoBehaviour, Entity {
                 Vector3 delta = characterController.GetPositionDelta();
                 Vector3 cameraDelta = GetForwardTranslation(delta);
                 Vector3 moveRangeDelta = Vector3.Lerp(freeMoveRange.transform.position, target.transform.position, 0.1f);
+
                 transform.position += cameraDelta;
-                transform.position += GetVerticalTranslation(moveRangeDelta.y - freeMoveRange.transform.position.y);
+                transform.position += GetVerticalTranslation(delta.y);
                 freeMoveRange.transform.position = moveRangeDelta;
-                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia);
+                transform.position = Vector3.Lerp(transform.position, FindClosestFlatPointOnRadius(), cameraInertia * Time.deltaTime * 2);
                 transform.LookAt(freeMoveRange.transform.position + lookAboveVector);
                 break;
             }
@@ -78,8 +79,9 @@ public class CameraController : MonoBehaviour, Entity {
             {
                 Vector3 delta = characterController.GetPositionDelta();
                 Vector3 cameraDelta = GetForwardTranslation(delta);
-                transform.position += GetVerticalTranslation(delta.y);
+
                 transform.position += cameraDelta;
+                transform.position += GetVerticalTranslation(delta.y);
                 freeMoveRange.transform.Translate(delta);
                 transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia);
                 transform.LookAt(freeMoveRange.transform.position + lookAboveVector);
@@ -97,8 +99,9 @@ public class CameraController : MonoBehaviour, Entity {
 
                 Vector3 delta = characterController.GetPositionDelta();
                 Vector3 moveRangeDelta = ApproachTarget(freeMoveRange.transform.position + delta);
-                transform.position += GetVerticalTranslation(moveRangeDelta.y - freeMoveRange.transform.position.y);
+
                 transform.position += delta;
+                transform.position += GetVerticalTranslation(delta.y);
                 freeMoveRange.transform.position += delta;
                 freeMoveRange.transform.position = moveRangeDelta;
                 transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia);
@@ -109,7 +112,8 @@ public class CameraController : MonoBehaviour, Entity {
             {
                 Vector3 delta = characterController.GetPositionDelta();
                 Vector3 moveRangeDelta = ApproachTarget(freeMoveRange.transform.position + delta);
-                transform.position += GetVerticalTranslation(moveRangeDelta.y - freeMoveRange.transform.position.y);
+
+                transform.position += GetVerticalTranslation(delta.y);
                 transform.position += delta;
                 freeMoveRange.transform.position += delta;
                 freeMoveRange.transform.position = moveRangeDelta;
@@ -199,73 +203,13 @@ public class CameraController : MonoBehaviour, Entity {
 
         if (rangeController.GetCurrentState() == StateId.TARGET_INSIDE_RANGE)
         {
-            if (characterController.GetPositionDelta() == Vector3.zero && Vector3.Distance(transform.position, CalculateRequiredDistance()) > 0.1f
-				&& timer > resetWaitTime)
-			{
-				// cameraMach.CommandMachine(CommandId.RESET);
-            }
-            else
-            {
-                cameraMach.CommandMachine(CommandId.STAY_PUT);
-            }
-
+            cameraMach.CommandMachine(CommandId.STAY_PUT);
         }
         else if (rangeController.GetCurrentState() == StateId.TARGET_OUTSIDE_RANGE)
         {
             cameraMach.CommandMachine(CommandId.FOLLOW);
         }
     }
-
-    #region ValueChecks
-    // Checking various camera values to ensure the camera is within behavior parameters
-
-    /// <summary>
-    /// Checks if the camera's current vertical angle is outside the valid range.
-    /// </summary>
-    /// <returns>Returns true if with the valid range, false otherwise</returns>
-    private bool IsCameraAngleValid()
-    {
-        Vector3 cameraToTarget = target.transform.position - transform.position;
-        Vector3 flatVectorToTarget = cameraToTarget;
-        flatVectorToTarget.y = 0; // removes Y (height) component
-
-        float currentCameraAngle = Vector3.Angle(cameraToTarget.normalized, flatVectorToTarget.normalized);
-        if (currentCameraAngle > maxVerticalAngle)
-        {
-            return false;
-        }
-        return true;
-    }
-
-    /// <summary>
-    /// Calculates the endpoint for MaintainDistance()
-    /// </summary>
-    /// <returns>the position the camera needs to be at when MaintainDistance finishes</returns>
-    private Vector3 CalculateRequiredDistance()
-    {
-        // get the direction we want the camera to be in relative to the player
-        Vector3 newCameraPosition = target.transform.forward * -1; // we want to be BEHIND, not in front
-        newCameraPosition.Normalize();
-
-        // get the height either from the camera or the player
-        float height = 0.0f;
-        RaycastHit hit;
-        if (Physics.Raycast(transform.position, Vector3.down, out hit, heightFromGround, Utilities.environmentOnly))
-        {
-            height = hit.transform.position.y + heightFromGround;
-        }
-        else
-        {
-            height = target.transform.position.y + heightFromGround;
-        }
-        newCameraPosition *= Mathf.Sqrt(Mathf.Pow(distanceFromTarget,2) - Mathf.Pow(height, 2)); // Pythagorean Theorem always comes in handy!
-        newCameraPosition.y = height;
-        newCameraPosition += target.transform.position;
-
-        return newCameraPosition;
-    }
-
-    #endregion
 
     #region MovementInterpolation
     /* Sometimes the camera should move without user input.
@@ -288,7 +232,7 @@ public class CameraController : MonoBehaviour, Entity {
 
         if (checkAngle >= maxVerticalAngle  && vertTranslation.y < 0)
         {
-            return vertTranslation;
+            return new Vector3(0, moveRangeHeightDelta, 0);
         }
         else if (vertTranslation.y > 0)
         {
@@ -307,14 +251,16 @@ public class CameraController : MonoBehaviour, Entity {
         Vector3 flatPosition = transform.position;
         Vector3 rangeFlatPosition = freeMoveRange.transform.position;
         float checkAngle = GetVerticalAngle();
+
         if (checkAngle > maxVerticalAngle)
         {
             // rotate pointOnCircle around freeMoveRange.transform.position, axis'd to transform.right
-            flatPosition = Quaternion.AngleAxis(-1 * (checkAngle - maxVerticalAngle), transform.right) * flatPosition;
+            flatPosition = Quaternion.AngleAxis(maxVerticalAngle - checkAngle, transform.right) * (flatPosition - rangeFlatPosition) + flatPosition;
         }
         else if (checkAngle < -1 * maxVerticalAngle)
         {
-            flatPosition = Quaternion.AngleAxis(checkAngle - maxVerticalAngle, transform.right) * flatPosition;
+            Debug.Log("huh");
+            flatPosition = Quaternion.AngleAxis(checkAngle + maxVerticalAngle, transform.right) * (flatPosition - rangeFlatPosition) + flatPosition;
         }
 
         // C = Center of circle (so position of moveRange,
@@ -325,6 +271,38 @@ public class CameraController : MonoBehaviour, Entity {
         pointOnCircle += rangeFlatPosition;
         pointOnCircle.y = transform.position.y;
         
+        return pointOnCircle;
+    }
+
+    /// <summary>
+    /// Finds the closest point on the circle parallel to the player
+    /// </summary>
+    /// <returns></returns>
+    private Vector3 FindClosestFlatPointOnRadius()
+    {
+        Vector3 flatPosition = transform.position;
+        Vector3 rangeFlatPosition = freeMoveRange.transform.position;
+        float checkAngle = GetVerticalAngle();
+
+        if (checkAngle > maxVerticalAngle)
+        {
+            // rotate pointOnCircle around freeMoveRange.transform.position, axis'd to transform.right
+            flatPosition = Quaternion.AngleAxis(maxVerticalAngle - checkAngle, transform.right) * flatPosition;
+        }
+        else if (checkAngle < -1 * maxVerticalAngle)
+        {
+            Debug.Log("huh");
+            flatPosition = Quaternion.AngleAxis(checkAngle + maxVerticalAngle, transform.right) * flatPosition;
+        }
+
+        // C = Center of circle (so position of moveRange,
+        // P = position of Camera
+        // V = P - C
+        flatPosition.y = rangeFlatPosition.y + heightFromGround;
+        Vector3 pointOnCircle = flatPosition - rangeFlatPosition;
+        pointOnCircle = pointOnCircle.normalized * distanceFromTarget; // flat radius
+        pointOnCircle += rangeFlatPosition;
+
         return pointOnCircle;
     }
 
