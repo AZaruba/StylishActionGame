@@ -56,6 +56,11 @@ public static class Controls {
                 Controls.SetInteract(KeyCode.JoystickButton1);
                 break;
         }
+        string[] names = Input.GetJoystickNames();
+        if (names.Length == 1 && names[0].Length == 0)
+        {
+            SetKeyboardControls();
+        }
         
         Controls.SetDeadzone(0.3f);
     }
@@ -92,5 +97,13 @@ public static class Controls {
     public static void SetDeadzone(float dz)
     {
         deadZone = dz;
+    }
+
+    private static void SetKeyboardControls()
+    {
+        Controls.SetAttack(KeyCode.J);
+        Controls.SetJump(KeyCode.Space);
+        Controls.SetInteract(KeyCode.K);
+        Controls.SetPause(KeyCode.Return);
     }
 }

@@ -815,12 +815,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   heightFromGround: 2
-  distanceFromTarget: 10
+  distanceFromTarget: 6
   lookHeightAboveTarget: 1
   maxVerticalAngle: 30
   cameraInertia: 0.5
   cameraMoveSpeed: 60
-  resetWaitTime: 2
+  resetWaitTime: 5
   target: {fileID: 1828475834}
   characterController: {fileID: 1828475845}
   freeMoveRange: {fileID: 635663120}

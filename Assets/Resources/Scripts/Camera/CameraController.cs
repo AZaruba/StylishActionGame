@@ -67,7 +67,9 @@ public class CameraController : MonoBehaviour, Entity {
                 freeMoveRange.transform.position = moveRangeDelta;
                 transform.position = Vector3.Lerp(transform.position, FindClosestFlatPointOnRadius(), cameraInertia * Time.deltaTime * 2);
                 transform.position += GetVerticalTranslation(moveRangeDelta.y);
+                // transform.position = MoveInFrontOfObjects();
                 transform.LookAt(Vector3.Lerp(oldFMPosition, freeMoveRange.transform.position + lookAboveVector, cameraInertia));
+                // transform.position = MoveInFrontOfObjects();
                 break;
             }
             case (StateId.FOLLOW_TARGET):
@@ -79,9 +81,11 @@ public class CameraController : MonoBehaviour, Entity {
                 transform.position += cameraDelta;
 
                 freeMoveRange.transform.position += delta;
-                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia);
+                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia * Time.deltaTime);
                 transform.position += GetVerticalTranslation(delta.y);
-                transform.LookAt(Vector3.Lerp(oldFMPosition, freeMoveRange.transform.position + lookAboveVector, cameraInertia));
+                // transform.position = MoveInFrontOfObjects();
+                transform.LookAt(Vector3.Lerp(oldFMPosition, freeMoveRange.transform.position + lookAboveVector, cameraInertia * Time.deltaTime));
+                // transform.position = MoveInFrontOfObjects();
                 break;
             }
             case (StateId.RETURN_TO_CENTER):
@@ -102,9 +106,11 @@ public class CameraController : MonoBehaviour, Entity {
                 transform.position += cameraDelta;
                 
                 freeMoveRange.transform.position = moveRangeDelta;
-                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia);
+                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia * Time.deltaTime);
                 transform.position += GetVerticalTranslation(moveRangeDelta.y);
-                transform.LookAt(Vector3.Lerp(oldFMPosition, freeMoveRange.transform.position + lookAboveVector, cameraInertia));
+                // transform.position = MoveInFrontOfObjects();
+                transform.LookAt(Vector3.Lerp(oldFMPosition, freeMoveRange.transform.position + lookAboveVector, cameraInertia * Time.deltaTime));
+                // transform.position = MoveInFrontOfObjects();
                 break;
             }
             case (StateId.WAITING):
@@ -116,9 +122,10 @@ public class CameraController : MonoBehaviour, Entity {
 
                 transform.position += cameraDelta;
                 freeMoveRange.transform.position = moveRangeDelta;
-                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia);
+                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia * Time.deltaTime);
                 transform.position += GetVerticalTranslation(moveRangeDelta.y);
-                transform.LookAt(Vector3.Lerp(oldFMPosition, freeMoveRange.transform.position + lookAboveVector, cameraInertia));
+                // transform.position = MoveInFrontOfObjects();
+                transform.LookAt(Vector3.Lerp(oldFMPosition, freeMoveRange.transform.position + lookAboveVector, cameraInertia * Time.deltaTime));
                 break;
             }
         }
@@ -350,6 +357,19 @@ public class CameraController : MonoBehaviour, Entity {
         {
             transform.RotateAround(freeMoveRange.transform.position, transform.right, -1 * degree * cameraMoveSpeed * Time.deltaTime);
         }
+    }
+
+    private Vector3 MoveInFrontOfObjects()
+    {
+        Vector3 newPosition = transform.position;
+
+        RaycastHit hit;
+        int layerMask = 1 << 8;
+        if (Physics.Raycast(newPosition, transform.forward, out hit, Vector3.Distance(newPosition,freeMoveRange.transform.position), layerMask))
+        {
+            newPosition = hit.transform.position; // we need to add the size of the object somehow
+        }
+        return newPosition;
     }
     #endregion
 

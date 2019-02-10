@@ -95,20 +95,23 @@ public class GravityController : MonoBehaviour {
     private void OnCollisionStay(Collision collision)
     {
         int layer = collision.gameObject.layer;
-        if (layer == 9)
+        if (verticalTranslation.y <= 0.1f)
         {
-            ContactPoint cPoint = collision.contacts[0];
-            if (Vector3.Dot(cPoint.normal, Vector3.up) > 0.5)
+            if (layer == 9)
             {
-                grounded = true; // jumping off enemies is neat!
+                ContactPoint cPoint = collision.contacts[0];
+                if (Vector3.Dot(cPoint.normal, Vector3.up) > 0.5)
+                {
+                    grounded = true; // jumping off enemies is neat!
+                }
             }
-        }
-        if (layer == 8)
-        {
-            ContactPoint cPoint = collision.contacts[0];
-            if (Vector3.Dot(cPoint.normal, Vector3.up) > 0.5)
+            if (layer == 8)
             {
-                grounded = true;
+                ContactPoint cPoint = collision.contacts[0];
+                if (Vector3.Dot(cPoint.normal, Vector3.up) > 0.5)
+                {
+                    grounded = true;
+                }
             }
         }
     }
