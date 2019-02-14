@@ -439,10 +439,11 @@ public enum CommandId
 	RECOVER,
 
     // attack commands
-    WAIT, // combos will be based on when the button is pressed during animations
-    WAIT_LONG, // "long" wait refers to ending a combo early (some combos are activated by waiting before a press)
-    ATTACK_BACK, // pointing the stick toward or away will change attacks
-    ATTACK_FORWARD,
+    START_ATTACK,
+    QUEUE_ATTACK,
+    WAIT,
+    // STOP
+    // RESET
 
     // camera commands
     FOLLOW,
@@ -481,17 +482,17 @@ public enum StateId
 	RECOVERING,
 	DEFEATED,
 
-    // Attack states
-    COMBO_1_1, // jab (X)
-    COMBO_1_2, // punch (X)
-    COMBO_1_3, // kick (X)
+    // Combat controller states states
+    READY,
+    // ATTACKING,
+    ATTACKING_LONG,
+    ATTACK_QUEUED,
+    NOT_READY,
 
-    COMBO_2_WAIT, // the waiting period between 1_2 and 2_3
-    COMBO_2_3, // sweep (wait, X)
-    COMBO_2_4, // explosion (X)
-
-    COMBO_3_1, // flip (back, X)
-    COMBO_3_2, // launch (X)
+    // Weapon states
+    // ATTACKING
+    // ATTACKING_LONG
+    // READY
 
     // camera states
     STATIONARY,

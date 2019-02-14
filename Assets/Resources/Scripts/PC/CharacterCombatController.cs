@@ -4,9 +4,7 @@ using UnityEngine;
 
 public class CharacterCombatController : MonoBehaviour {
 
-    public GameObject hitboxObject;
-
-    private StateMachine attackMach;
+    private StateMachine stateMach;
 
     // Use this for initialization
     void Start()
@@ -14,41 +12,36 @@ public class CharacterCombatController : MonoBehaviour {
         InitializeStateMachine();
     }
 
-    public void AttackCommand(float stickPosition) // the stick will alter the chosen attack in some instances
-    {
-        int nextAttack = (int)StateId.IDLE;
-        if (stickPosition == Controls.neutralStickPosition)
-        {
-            attackMach.CommandMachine(CommandId.ATTACK, ref nextAttack);
-        }
-        else
-        {
-            attackMach.CommandMachine(CommandId.ATTACK, ref nextAttack);
-        }
-    }
-
     private void InitializeStateMachine()
     {
-        attackMach = new StateMachine(StateId.IDLE);
+        stateMach = new StateMachine(StateId.READY);
 
-        attackMach.AddState(StateId.COMBO_1_1);
-        attackMach.AddState(StateId.COMBO_1_2);
-        attackMach.AddState(StateId.COMBO_1_3);
+        stateMach.AddState(StateId.ATTACKING);
+        stateMach.AddState(StateId.ATTACKING_LONG);
+        stateMach.AddState(StateId.ATTACK_QUEUED);
+        stateMach.AddState(StateId.NOT_READY);
 
-        attackMach.LinkStates(StateId.IDLE, StateId.COMBO_1_1, CommandId.ATTACK, (int)StateId.COMBO_1_1);
-        attackMach.LinkStates(StateId.COMBO_1_1, StateId.COMBO_1_2, CommandId.ATTACK, (int)StateId.COMBO_1_2);
-        attackMach.LinkStates(StateId.COMBO_1_2, StateId.COMBO_1_3, CommandId.ATTACK, (int)StateId.COMBO_1_3);
+        stateMach.LinkStates(StateId.READY, StateId.ATTACK_QUEUED, CommandId.QUEUE_ATTACK);
+        stateMach.LinkStates(StateId.ATTACK_QUEUED, StateId.ATTACKING, CommandId.START_ATTACK);
 
-        attackMach.LinkAllStates(StateId.IDLE, CommandId.WAIT_LONG);
+        stateMach.LinkStates(StateId.ATTACKING, StateId.ATTACK_QUEUED, CommandId.QUEUE_ATTACK);
+        stateMach.LinkStates(StateId.ATTACKING, StateId.ATTACKING_LONG, CommandId.WAIT);
+
+        stateMach.LinkStates(StateId.ATTACKING_LONG, StateId.ATTACK_QUEUED, CommandId.QUEUE_ATTACK);
+
+        stateMach.LinkStates(StateId.READY, StateId.NOT_READY, CommandId.STOP);
+        stateMach.LinkStates(StateId.NOT_READY, StateId.READY, CommandId.RESET);
+
+        stateMach.AddPauseState();
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void UpdateStateMachine()
     {
-        if (collision.gameObject.layer != 9)
-            return;
+        
+    }
 
-        IEnemy attackingEnemy = collision.gameObject.GetComponent<IEnemy>();
-        if (attackingEnemy != null)
-            attackingEnemy.Attack();
+    public void StartAttack()
+    {
+        stateMach.CommandMachine(CommandId.QUEUE_ATTACK);
     }
 }
