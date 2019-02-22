@@ -107,7 +107,7 @@ public class CharacterMasterController : MonoBehaviour, Entity {
 
         stateMach.LinkStates(StateId.IDLE, StateId.ATTACKING, CommandId.ATTACK);
         stateMach.LinkStates(StateId.MOVING, StateId.ATTACKING, CommandId.ATTACK);
-        stateMach.LinkStates(StateId.ATTACKING, StateId.IDLE, CommandId.WAIT_LONG);
+        stateMach.LinkStates(StateId.ATTACKING, StateId.IDLE, CommandId.WAIT);
 
 		stateMach.AddPauseState();
     }
