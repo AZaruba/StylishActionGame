@@ -3,72 +3,117 @@ using System.Collections.Generic;
 using UnityEngine;
 
 #region StateTreeClass
-public class StateTree {
+public class StateTree<T> where T : new() {
 
-    private Node root;
-    private Node currentNode;
+    private Node<T> root;
+    private Node<T> currentNode;
 
 	public StateTree()
     {
+        root = new Node<T>();
+    }
 
+    public StateTree(T item)
+    {
+        root = new Node<T>(item);
+    }
+
+    public StateTree(Node<T> rootNode)
+    {
+        root = rootNode;
     }
 
     public void ResetTree()
     {
         currentNode = root;
     }
+
+    public void MoveLeft()
+    {
+        currentNode = currentNode.GetLeftNode();
+    }
+
+    public void MoveRight()
+    {
+        currentNode = currentNode.GetRightNode();
+    }
+
+    public void MoveCenter()
+    {
+        currentNode = currentNode.GetCenterNode();
+    }
+
+    public void MoveUp()
+    {
+        currentNode = currentNode.GetParent();
+    }
 }
 #endregion
 
-public class Node
+public class Node<T> where T : new()
 {
-    private Node leftNode; // for attacking, this is charge
-    private Node rightNode; // for attacking, this is wait
-    private Node centerNode; // for attacking, this is comboing
+    private Node<T> leftNode; // for attacking, this is charge
+    private Node<T> rightNode; // for attacking, this is wait
+    private Node<T> centerNode; // for attacking, this is comboing
+    private T heldItem;
 
-    private int heldInt;
+    private Node<T> parent;
 
     public Node()
     {
-        heldInt = 0;
+        heldItem = default(T);
     }
 
-    public Node(int n)
+    public Node(T n)
     {
-        heldInt = n;
+        heldItem = n;
     }
 
     #region NodeGetters
-    public Node GetLeftNode()
+    public Node<T> GetLeftNode()
     {
         return leftNode;
     }
 
-    public Node GetRightNode()
+    public Node<T> GetRightNode()
     {
         return rightNode;
     }
 
-    public Node GetCenterNode()
+    public Node<T> GetCenterNode()
     {
         return centerNode;
+    }
+    public Node<T> GetParent()
+    {
+        return parent;
+    }
+
+    public T GetHeldItem()
+    {
+        return heldItem;
     }
     #endregion
 
     #region NodeSetters
-    public void SetLeftNode(Node nodeIn)
+    public void SetLeftNode(Node<T> nodeIn)
     {
         leftNode = nodeIn;
     }
 
-    public void SetRightNode(Node nodeIn)
+    public void SetRightNode(Node<T> nodeIn)
     {
         centerNode = nodeIn;
     }
 
-    public void SetCenterNode(Node nodeIn)
+    public void SetCenterNode(Node<T> nodeIn)
     {
         centerNode = nodeIn;
+    }
+    
+    public void SetParent(Node<T> nodeIn)
+    {
+        parent = nodeIn;
     }
     #endregion
 }
