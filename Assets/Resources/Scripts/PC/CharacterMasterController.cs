@@ -19,6 +19,7 @@ public class CharacterMasterController : MonoBehaviour, Entity {
 	// Use this for initializationß
 	void Start () {
         InitializeStateMachine();
+        combatController = new CharacterCombatController();
 	}
 
     // evidently input should be read in update and not fixedUpdate
@@ -74,7 +75,7 @@ public class CharacterMasterController : MonoBehaviour, Entity {
             }
             case (StateId.ATTACKING):
             {
-
+                combatController.Update(); // can we safely pause updating when not attacking?
                 break;
             }
         }
@@ -153,13 +154,16 @@ public class CharacterMasterController : MonoBehaviour, Entity {
             stateMach.CommandMachine(CommandId.LAND);
             gravityController.Land();
         }
-        /* commented out until we get attacking worked out
-        if (Input.GetKeyDown(Controls.Attack))
+
+        if (InputBuffer.attackDown)
         {
             stateMach.CommandMachine(CommandId.ATTACK);
-            combatController.AttackCommand(GetMovementStickPosition());
+            combatController.Command(CommandId.QUEUE_ATTACK);
         }
-        */
+        if (combatController.IsReady())
+        {
+            stateMach.CommandMachine(CommandId.WAIT);
+        }
     }
     #endregion
 

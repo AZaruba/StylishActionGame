@@ -47,6 +47,11 @@ public class StateTree<T> where T : new() {
     {
         currentNode = currentNode.GetParent();
     }
+
+    public T GetCurrentItem()
+    {
+        return currentNode.GetHeldItem();
+    }
 }
 #endregion
 

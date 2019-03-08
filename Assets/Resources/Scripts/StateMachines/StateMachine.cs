@@ -452,6 +452,12 @@ public enum CommandId
     FOLLOW_TARGET,
     // RESET
     
+    // weapon commands
+    // RESET,
+    QUEUE_ATTACK,
+    CHARGE_ATTACK,
+    START_ATTACK,
+    INTERRUPT,
 
     // Pause commands
     PAUSE,
@@ -487,6 +493,12 @@ public enum StateId
     // look range states
     TARGET_INSIDE_RANGE,
     TARGET_OUTSIDE_RANGE,
+
+    // weapon states
+    READY,
+    ATTACK_QUEUED,
+    // ATTACKING,
+    CHARGING,
 
     // pause state
     PAUSE,
