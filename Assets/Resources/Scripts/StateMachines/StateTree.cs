@@ -10,17 +10,22 @@ public class StateTree<T> where T : new() {
 
 	public StateTree()
     {
-        root = new Node<T>();
+        root = new Node<T>(); // root should be ready state, no attack
+        currentNode = root;
     }
 
     public StateTree(T item)
     {
-        root = new Node<T>(item);
+        root = new Node<T>(); // root should be ready state, no attack
+        currentNode = root;
+
+        SetChildNode(item, Direction.CENTER);
     }
 
     public StateTree(Node<T> rootNode)
     {
-        root = rootNode;
+        root = new Node<T>(); // root should be ready state, no attack
+        currentNode = root;
     }
 
     public void ResetTree()
@@ -28,19 +33,37 @@ public class StateTree<T> where T : new() {
         currentNode = root;
     }
 
-    public void MoveLeft()
+    public bool MoveLeft()
     {
-        currentNode = currentNode.GetLeftNode();
+        Node<T> nextNode = currentNode.GetLeftNode();
+        if (nextNode == null)
+        {
+            return false;
+        }
+        currentNode = nextNode;
+        return true;
     }
 
-    public void MoveRight()
+    public bool MoveRight()
     {
-        currentNode = currentNode.GetRightNode();
+        Node<T> nextNode = currentNode.GetRightNode();
+        if (nextNode == null)
+        {
+            return false;
+        }
+        currentNode = nextNode;
+        return true;
     }
 
-    public void MoveCenter()
+    public bool MoveCenter()
     {
-        currentNode = currentNode.GetCenterNode();
+        Node<T> nextNode = currentNode.GetCenterNode();
+        if (nextNode == null)
+        {
+            return false;
+        }
+        currentNode = nextNode;
+        return true;
     }
 
     public void MoveUp()
@@ -52,6 +75,68 @@ public class StateTree<T> where T : new() {
     {
         return currentNode.GetHeldItem();
     }
+
+    #region NodeGeneration
+    public void SetChildNode(T itemIn, Direction dirIn)
+    {
+        switch (dirIn)
+        {
+            case (Direction.LEFT):
+            {
+                currentNode.SetLeftNode(new Node<T>(itemIn));
+                return;
+            }
+            case (Direction.CENTER):
+            {
+                currentNode.SetCenterNode(new Node<T>(itemIn));
+                return;
+            }
+            case (Direction.RIGHT):
+            {
+                currentNode.SetRightNode(new Node<T>(itemIn));
+                return;
+            }
+        }
+    }
+
+    // for tree generation, we need to make sure there's not already a node there.
+    public bool DoesChildExist(Direction dirIn)
+    {
+        switch (dirIn)
+        {
+            case (Direction.LEFT):
+            {
+                if (currentNode.GetLeftNode() == null)
+                {
+                    return false;
+                }
+                break;
+            }
+            case (Direction.CENTER):
+            {
+                if (currentNode.GetCenterNode() == null)
+                {
+                    return false;
+                }
+                break;
+            }
+            case (Direction.RIGHT):
+            {
+                if (currentNode.GetRightNode() == null)
+                {
+                    return false;
+                }
+                break;
+            }
+        }
+        return true;
+    }
+
+    public Node<T> PrintNode()
+    {
+        return currentNode;
+    }
+    #endregion
 }
 #endregion
 
@@ -108,7 +193,7 @@ public class Node<T> where T : new()
 
     public void SetRightNode(Node<T> nodeIn)
     {
-        centerNode = nodeIn;
+        rightNode = nodeIn;
     }
 
     public void SetCenterNode(Node<T> nodeIn)
@@ -122,3 +207,17 @@ public class Node<T> where T : new()
     }
     #endregion
 }
+
+#region TreeTraversal
+public enum Direction
+{
+    LEFT = 0,
+    CENTER,
+    RIGHT,
+
+    // Attack tree
+    CHARGE = 0,
+    COMBO = 1,
+    WAIT = 2,
+}
+#endregion

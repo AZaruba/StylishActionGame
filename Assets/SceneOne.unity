@@ -465,7 +465,6 @@ GameObject:
   - component: {fileID: 712530757}
   - component: {fileID: 712530756}
   - component: {fileID: 712530755}
-  - component: {fileID: 712530758}
   m_Layer: 10
   m_Name: weapon
   m_TagString: Untagged
@@ -539,18 +538,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 712530753}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &712530758
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 712530753}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4cc720401e4694649982066674bf923d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  debugAttackDistance: 4
 --- !u!1 &840780271
 GameObject:
   m_ObjectHideFlags: 0
@@ -1083,7 +1070,6 @@ GameObject:
   - component: {fileID: 1828475836}
   - component: {fileID: 1828475835}
   - component: {fileID: 1828475839}
-  - component: {fileID: 1828475841}
   - component: {fileID: 1828475840}
   - component: {fileID: 1828475842}
   - component: {fileID: 1828475844}
@@ -1192,18 +1178,6 @@ MonoBehaviour:
   moveSpeed: 7
   airMoveSpeed: 5
   rBody: {fileID: 1828475839}
---- !u!114 &1828475841
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1828475834}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30cb700d339907d47ade19307e7c2471, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hitboxObject: {fileID: 0}
 --- !u!114 &1828475842
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1246,7 +1220,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   movementController: {fileID: 1828475840}
   gravityController: {fileID: 1828475842}
-  combatController: {fileID: 1828475841}
   rBody: {fileID: 1828475839}
 --- !u!1 &1969143558
 GameObject:

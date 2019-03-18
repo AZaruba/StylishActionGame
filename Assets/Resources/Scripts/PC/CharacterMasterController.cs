@@ -155,7 +155,7 @@ public class CharacterMasterController : MonoBehaviour, Entity {
             gravityController.Land();
         }
 
-        if (InputBuffer.attackDown)
+        if (InputBuffer.attackPressed)
         {
             stateMach.CommandMachine(CommandId.ATTACK);
             combatController.Command(CommandId.QUEUE_ATTACK);
