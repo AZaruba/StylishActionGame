@@ -109,6 +109,16 @@ public class Weapon {
         }
         currentAttack.UpdateTimer();
     }
+
+    public StateId GetAttackPhase()
+    {
+        Attack currentAttack = attackTree.GetCurrentItem();
+        if (currentAttack == null)
+        {
+            return StateId.READY;
+        }
+        return currentAttack.GetAttackPhase();
+    }
     #endregion
 }
 
@@ -119,16 +129,19 @@ public class Attack // TODO: after animations, remove monobehaviour
     private float linkTime; // time in animation at which the next attack can start
     private float longLinkTime; // if the combo branches, this is the late start time
     private float chargeTime;
-    private bool ready; // FSM necessary as we want to be in one of four states?
-    private bool finished; // idle, attacking, link ready, long link ready
+
+    StateMachine attackPhase;
+
+    // TODO : remove below members
+    private float resetTime; // should be replaced by a check to our animator
 
     private float currentTime;
 
     public Attack()
     {
-        ready = true;
-        finished = true;
         currentTime = 0;
+
+        InitializeStateMachine();
     }
 
     /// <summary>
@@ -140,35 +153,39 @@ public class Attack // TODO: after animations, remove monobehaviour
     /// <param name="ct">Charge time. Defaults to -1, which is no charge</param>
     public Attack(int d, float lt = -1, float llt = -1, float ct = -1) // Animation anim
     {
-        ready = true;
-        finished = true;
-
         damage = d;
         linkTime = lt;
         longLinkTime = llt;
         chargeTime = ct;
 
         currentTime = 0;
+
+        InitializeStateMachine();
+
+        resetTime = llt + 1;
     }
 
     public void Execute()
     {
-        ready = false;
-        finished = false;
+        Debug.Log(damage); // this is currently our only feedback without an animation
+        attackPhase.CommandMachine(CommandId.START_ATTACK);
 
         StartTimer();
     }
 
     public bool IsReady()
     {
-        return ready;
+        return attackPhase.GetCurrentStateId() == StateId.LINK_READY ||
+            attackPhase.GetCurrentStateId() == StateId.LATE_LINK_READY;
     }
 
+    // Ensure IsFinished() is never called when the combat controller is ready, as this may cause strange behavior
     public bool IsFinished()
     {
-        return finished;
+        return attackPhase.GetCurrentStateId() == StateId.READY;
     }
 
+    // Remove the debug functions when animation is in to provide real feedback
     #region DebugFunctions
     public void StartTimer()
     {
@@ -181,13 +198,22 @@ public class Attack // TODO: after animations, remove monobehaviour
 
         if (currentTime > linkTime)
         {
-            ready = true;
+            attackPhase.CommandMachine(CommandId.READY_LINK);
         }
         if (currentTime > longLinkTime)
         {
-            finished = true;
+            attackPhase.CommandMachine(CommandId.READY_LATE_LINK);
+        }
+        if (currentTime > resetTime)
+        {
+            attackPhase.CommandMachine(CommandId.RESET);
             currentTime = 0;
         }
+    }
+
+    public StateId GetAttackPhase()
+    {
+        return attackPhase.GetCurrentStateId();
     }
 
     // pre-animation function. Will be replaced by using the Animation's current time
@@ -199,14 +225,30 @@ public class Attack // TODO: after animations, remove monobehaviour
             currentTime += Time.fixedDeltaTime;
             yield return null;
         }
-        ready = true;
         while (currentTime < longLinkTime) // long link time will be our "end" time. Again, animations will eventually govern whether the attack is finished
         {
             currentTime += Time.fixedDeltaTime;
             yield return null;
         }
-        finished = true;
         yield return null;
     }
     #endregion
+
+    private void InitializeStateMachine()
+    {
+        // the attack state machine should be a simple circle
+        attackPhase = new StateMachine(StateId.READY);
+
+        attackPhase.AddState(StateId.ANIMATING);
+        attackPhase.AddState(StateId.LINK_READY);
+        attackPhase.AddState(StateId.LATE_LINK_READY);
+
+        attackPhase.LinkStates(StateId.READY, StateId.ANIMATING, CommandId.START_ATTACK);
+        attackPhase.LinkStates(StateId.ANIMATING, StateId.LINK_READY, CommandId.READY_LINK);
+        attackPhase.LinkStates(StateId.LINK_READY, StateId.LATE_LINK_READY, CommandId.READY_LATE_LINK);
+        attackPhase.LinkStates(StateId.LINK_READY, StateId.READY, CommandId.RESET); // some attacks may not have a late link
+        attackPhase.LinkStates(StateId.LATE_LINK_READY, StateId.READY, CommandId.RESET);
+
+        attackPhase.AddPauseState();
+    }
 }

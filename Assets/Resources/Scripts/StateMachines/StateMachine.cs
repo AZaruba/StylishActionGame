@@ -452,12 +452,18 @@ public enum CommandId
     FOLLOW_TARGET,
     // RESET
     
-    // weapon commands
+    // combat commands
     // RESET,
     QUEUE_ATTACK,
     CHARGE_ATTACK,
     START_ATTACK,
     INTERRUPT,
+
+    // weapon attacks
+    // START_ATTACK
+    READY_LINK,
+    READY_LATE_LINK,
+    // RESET
 
     // Pause commands
     PAUSE,
@@ -494,11 +500,17 @@ public enum StateId
     TARGET_INSIDE_RANGE,
     TARGET_OUTSIDE_RANGE,
 
-    // weapon states
+    // combat states
     READY,
     ATTACK_QUEUED,
     // ATTACKING,
     CHARGING,
+
+    // weapon states
+    // READY,
+    ANIMATING,
+    LINK_READY,
+    LATE_LINK_READY,
 
     // pause state
     PAUSE,

@@ -32,7 +32,7 @@ public class CharacterCombatController {
                 }
                 else
                 {
-                    currentWeapon.UpdateAttackTimer();
+                    currentWeapon.UpdateAttackTimer(); // this will be removed once animations are in
                 }
                 break;
             }
@@ -45,7 +45,7 @@ public class CharacterCombatController {
                 }
                 else
                 {
-                    currentWeapon.UpdateAttackTimer();
+                    currentWeapon.UpdateAttackTimer(); // this will be removed once animations are in
                 }
                 break;
             }
@@ -93,11 +93,14 @@ public class CharacterCombatController {
          */
 
         Attack demoHit = new Attack(1, 1, 2); // 1
-        Attack demoCombo = new Attack(2, 2, 10);
+        Attack demoCombo = new Attack(2, 2, 4);
+        Attack demoFinisher = new Attack(3, 1, 2);
 
         Weapon defaultWeapon = new Weapon(demoHit); // 2
         defaultWeapon.MoveTree(Direction.COMBO); // 3
-        defaultWeapon.AddAttack(demoCombo, Direction.COMBO); // 4 no 5 currently
+        defaultWeapon.AddAttack(demoCombo, Direction.COMBO); // 4
+        defaultWeapon.MoveTree(Direction.COMBO); // 5
+        defaultWeapon.AddAttack(demoFinisher, Direction.COMBO);
         defaultWeapon.ReadyTree(); // 6
 
         currentWeapon = defaultWeapon; // 7
