@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class CameraController : MonoBehaviour, Entity {
 
@@ -22,6 +23,8 @@ public class CameraController : MonoBehaviour, Entity {
     [SerializeField] private GameObject freeMoveRange;
     [SerializeField] private CameraMoveRangeController rangeController;
 
+    [SerializeField] private Text debugText;
+
     private StateMachine cameraMach;
 	private StateId currentStateId;
 	private float timer;
@@ -31,7 +34,6 @@ public class CameraController : MonoBehaviour, Entity {
     void Start ()
     {
         InitializeStateMachine();
-        InitializeCameraPosition();
 
         rangeController = freeMoveRange.GetComponent<CameraMoveRangeController>();
         if (rangeController == null)
@@ -47,7 +49,10 @@ public class CameraController : MonoBehaviour, Entity {
             characterController = target.GetComponent<CharacterMasterController>();
         }
 
-		timer = 0f;
+        InitializeCameraPosition();
+        UpdateStateMachine();
+
+        timer = 0f;
 	}
 
     private void FixedUpdate()
@@ -65,7 +70,7 @@ public class CameraController : MonoBehaviour, Entity {
                 transform.position += cameraDelta;
                 
                 freeMoveRange.transform.position = moveRangeDelta;
-                transform.position = Vector3.Lerp(transform.position, FindClosestFlatPointOnRadius(), cameraInertia * Time.deltaTime * 2);
+                transform.position = Vector3.Lerp(transform.position, FindClosestFlatPointOnRadius(), cameraInertia * Time.fixedDeltaTime * 2);
                 transform.position += GetVerticalTranslation(moveRangeDelta.y);
                 // transform.position = MoveInFrontOfObjects();
                 transform.LookAt(Vector3.Lerp(oldFMPosition, freeMoveRange.transform.position + lookAboveVector, cameraInertia));
@@ -81,10 +86,10 @@ public class CameraController : MonoBehaviour, Entity {
                 transform.position += cameraDelta;
 
                 freeMoveRange.transform.position += delta;
-                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia * Time.deltaTime);
+                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia * Time.fixedDeltaTime);
                 transform.position += GetVerticalTranslation(delta.y);
                 // transform.position = MoveInFrontOfObjects();
-                transform.LookAt(Vector3.Lerp(oldFMPosition, freeMoveRange.transform.position + lookAboveVector, cameraInertia * Time.deltaTime));
+                transform.LookAt(Vector3.Lerp(oldFMPosition, freeMoveRange.transform.position + lookAboveVector, cameraInertia * Time.fixedDeltaTime));
                 // transform.position = MoveInFrontOfObjects();
                 break;
             }
@@ -106,10 +111,10 @@ public class CameraController : MonoBehaviour, Entity {
                 transform.position += cameraDelta;
                 
                 freeMoveRange.transform.position = moveRangeDelta;
-                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia * Time.deltaTime);
+                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia * Time.fixedDeltaTime);
                 transform.position += GetVerticalTranslation(moveRangeDelta.y);
                 // transform.position = MoveInFrontOfObjects();
-                transform.LookAt(Vector3.Lerp(oldFMPosition, freeMoveRange.transform.position + lookAboveVector, cameraInertia * Time.deltaTime));
+                transform.LookAt(Vector3.Lerp(oldFMPosition, freeMoveRange.transform.position + lookAboveVector, cameraInertia * Time.fixedDeltaTime));
                 // transform.position = MoveInFrontOfObjects();
                 break;
             }
@@ -122,10 +127,10 @@ public class CameraController : MonoBehaviour, Entity {
 
                 transform.position += cameraDelta;
                 freeMoveRange.transform.position = moveRangeDelta;
-                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia * Time.deltaTime);
+                transform.position = Vector3.Lerp(transform.position, FindClosestPointOnRadius(), cameraInertia * Time.fixedDeltaTime);
                 transform.position += GetVerticalTranslation(moveRangeDelta.y);
                 // transform.position = MoveInFrontOfObjects();
-                transform.LookAt(Vector3.Lerp(oldFMPosition, freeMoveRange.transform.position + lookAboveVector, cameraInertia * Time.deltaTime));
+                transform.LookAt(Vector3.Lerp(oldFMPosition, freeMoveRange.transform.position + lookAboveVector, cameraInertia * Time.fixedDeltaTime));
                 break;
             }
         }
@@ -157,6 +162,7 @@ public class CameraController : MonoBehaviour, Entity {
                 break;
             }
         }
+        debugText.text = cameraMach.GetCurrentStateId().ToString();
     }
 
     private void InitializeStateMachine()
@@ -187,18 +193,16 @@ public class CameraController : MonoBehaviour, Entity {
 
     private void InitializeCameraPosition()
     {
-        Vector3 cameraPosition = target.transform.position;
+        Vector3 moveRangePosition = target.transform.position;
+        freeMoveRange.transform.position = moveRangePosition;
+        freeMoveRange.transform.up = Vector3.up;
+
+        Vector3 cameraPosition = moveRangePosition;
         cameraPosition -= Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized * distanceFromTarget;
         cameraPosition.y += heightFromGround;
         transform.position = cameraPosition;
         transform.up = Vector3.up;
         lookAboveVector = new Vector3(0, lookHeightAboveTarget, 0);
-
-        Vector3 moveRangePosition = transform.position;
-        moveRangePosition.y -= heightFromGround;
-        moveRangePosition += Vector3.ProjectOnPlane(transform.forward, Vector3.up).normalized * distanceFromTarget;
-        freeMoveRange.transform.position = moveRangePosition;
-        freeMoveRange.transform.up = Vector3.up;
 
         transform.LookAt(freeMoveRange.transform.position);
     }
@@ -232,7 +236,7 @@ public class CameraController : MonoBehaviour, Entity {
         }
         else if (rangeController.GetCurrentState() == StateId.TARGET_OUTSIDE_RANGE)
         {
-            cameraMach.CommandMachine(CommandId.FOLLOW);
+            cameraMach.CommandMachine(CommandId.TIME_OUT);
         }
     }
 
