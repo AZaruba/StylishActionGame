@@ -87,6 +87,9 @@ public class LevelManager : MonoBehaviour {
             return false;
         }
         // load data into appropriate values
+        CharacterMasterController charController = (CharacterMasterController)FindObjectOfType(typeof(CharacterMasterController));
+
+        charController.SetPosition(dataIn.playerPosition);
         return true;
     }
 }

@@ -6,6 +6,7 @@ using UnityEngine;
 public struct GameData
 {
     public Vector3 playerPosition;
+    public Vector3 cameraPosition;
     public bool successfulRead;
 }
 
@@ -23,49 +24,12 @@ public static class Utilities {
     #region FileIO
     public static bool SaveGame(GameData dataOut)
     {
-        string fileOutName = Application.persistentDataPath + Path.DirectorySeparatorChar + "save.dat";
-        BinaryWriter binOut;
-
-        if (File.Exists(fileOutName))
-        {
-            binOut = new BinaryWriter(File.Open(fileOutName, FileMode.Create));
-        }
-        else
-        {
-            binOut = new BinaryWriter(File.Create(fileOutName));
-        }
-
-        // add data to file
-        binOut.Write(dataOut.playerPosition.x);
-        binOut.Write(dataOut.playerPosition.y);
-        binOut.Write(dataOut.playerPosition.z);
-
-        binOut.Close();
-        return true;
+        return SaveManager.SaveGame(dataOut);
     }
 
     public static GameData LoadGame(string fileName = "save.dat")
     {
-        string fileInName = Application.persistentDataPath + Path.DirectorySeparatorChar + fileName;
-        BinaryReader binIn;
-        GameData dataIn = new GameData();
-
-        if (File.Exists(fileInName))
-        {
-            binIn = new BinaryReader(File.Open(fileInName, FileMode.Open));
-        }
-        else
-        {
-            dataIn.successfulRead = false;
-            return dataIn;
-        }
-        dataIn.playerPosition.x = binIn.ReadSingle();
-        dataIn.playerPosition.y = binIn.ReadSingle();
-        dataIn.playerPosition.z = binIn.ReadSingle();
-
-        binIn.Close();
-        dataIn.successfulRead = true;
-        return dataIn;
+        return SaveManager.LoadGame(fileName);
     }
     #endregion
 
