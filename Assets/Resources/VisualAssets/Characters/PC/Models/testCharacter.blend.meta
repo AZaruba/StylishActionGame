@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 2951c11c879160946bf860f49e26fb92
-timeCreated: 1549824210
+timeCreated: 1555176432
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
@@ -12,16 +12,18 @@ ModelImporter:
     100008: Left_Bicep
     100010: Left_Calf
     100012: Left_Forearm
-    100014: Left_Hip
-    100016: Left_Shoulder
-    100018: Left_Thigh
-    100020: Right_Bicep
-    100022: Right_Calf
-    100024: Right_Forearm
-    100026: Right_Hip
-    100028: Right_Shoulder
-    100030: Right_Thigh
-    100032: //RootNode
+    100014: Left_Hand
+    100016: Left_Hip
+    100018: Left_Shoulder
+    100020: Left_Thigh
+    100022: Right_Bicep
+    100024: Right_Calf
+    100026: Right_Forearm
+    100028: Right_Hand
+    100030: Right_Hip
+    100032: Right_Shoulder
+    100034: Right_Thigh
+    100036: //RootNode
     400000: Armature
     400002: Chest
     400004: Grid
@@ -29,19 +31,22 @@ ModelImporter:
     400008: Left_Bicep
     400010: Left_Calf
     400012: Left_Forearm
-    400014: Left_Hip
-    400016: Left_Shoulder
-    400018: Left_Thigh
-    400020: Right_Bicep
-    400022: Right_Calf
-    400024: Right_Forearm
-    400026: Right_Hip
-    400028: Right_Shoulder
-    400030: Right_Thigh
-    400032: //RootNode
+    400014: Left_Hand
+    400016: Left_Hip
+    400018: Left_Shoulder
+    400020: Left_Thigh
+    400022: Right_Bicep
+    400024: Right_Calf
+    400026: Right_Forearm
+    400028: Right_Hand
+    400030: Right_Hip
+    400032: Right_Shoulder
+    400034: Right_Thigh
+    400036: //RootNode
     2100000: unnamed
     4300000: Grid
-    7400000: Default Take
+    7400000: Walk
+    7400002: ArmatureAction
     9500000: //RootNode
     13700000: Grid
   externalObjects: {}
@@ -70,7 +75,63 @@ ModelImporter:
     animationWrapMode: 0
     extraExposedTransformPaths: []
     extraUserProperties: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Walk
+      takeName: Default Take
+      firstFrame: 0
+      lastFrame: 39
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: ArmatureAction
+      takeName: ArmatureAction
+      firstFrame: -1
+      lastFrame: 39
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     isReadable: 1
   meshes:
     lODScreenPercentages: []
