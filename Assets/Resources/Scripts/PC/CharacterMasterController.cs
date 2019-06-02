@@ -9,7 +9,7 @@ public class CharacterMasterController : MonoBehaviour, Entity {
     [SerializeField] private GravityController gravityController;
     [SerializeField] private CharacterCombatController combatController;
     [SerializeField] private Rigidbody rBody;
-    [SerializeField] private CharacterAnimationController animController;
+    // [SerializeField] private CharacterAnimationController animController;
 
     private StateMachine stateMach;
     private StateId currentStateId;
@@ -129,12 +129,12 @@ public class CharacterMasterController : MonoBehaviour, Entity {
         if (Utilities.GetMovementStickPosition() != Controls.neutralStickPosition)
         {
             stateMach.CommandMachine(CommandId.MOVE);
-            animController.StartWalkAnimation();
+            // animController.StartWalkAnimation();
         }
         else
         {
             stateMach.CommandMachine(CommandId.STOP);
-            animController.StartIdleAnimation();
+            // animController.StartIdleAnimation();
         }
         if (Input.GetKeyDown(Controls.Jump))
         {
