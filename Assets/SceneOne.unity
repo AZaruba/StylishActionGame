@@ -796,10 +796,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1794237588}
-  - component: {fileID: 1794237587}
-  - component: {fileID: 1794237586}
-  - component: {fileID: 1794237585}
-  - component: {fileID: 1794237584}
   - component: {fileID: 1794237583}
   - component: {fileID: 1794237582}
   m_Layer: 11
@@ -836,63 +832,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 2
---- !u!114 &1794237584
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1794237581}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ee45c3aadcdf61439634610c4e590df, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  moveSpeed: 5
-  airMoveSpeed: 5
-  rBody: {fileID: 1794237583}
---- !u!114 &1794237585
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1794237581}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 07758ba1ea4879b4f824c617f099eec2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  weightFactor: 0.8
-  jumpVelocity: 0.1
-  terminalVelocity: 1
-  jumpForceTime: 0.25
-  objectCollider: {fileID: 1794237582}
---- !u!114 &1794237586
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1794237581}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fc71874da8ab6ee4ca4755c30f72f8d0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHealth: 10
-  healthBar: {fileID: 0}
---- !u!114 &1794237587
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1794237581}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08c9d6aa86311ae4cb96fef6884a5aa4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  movementController: {fileID: 1794237584}
-  gravityController: {fileID: 1794237585}
-  rBody: {fileID: 1794237583}
 --- !u!4 &1794237588
 Transform:
   m_ObjectHideFlags: 0

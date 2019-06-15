@@ -514,5 +514,15 @@ public enum StateId
 
     // pause state
     PAUSE,
+
+    // new state IDs
+    // IDLE,
+    // MOVING,
+    JUMPING,
+    JUMPING_MOVING,
+    // FALLING,
+    // FALLING_MOVING,
+    // RECOVERING,
+    // IDLE_LONG,
 }
 #endregion
