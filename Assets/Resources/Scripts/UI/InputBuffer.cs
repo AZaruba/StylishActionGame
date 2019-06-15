@@ -16,9 +16,11 @@ public class InputBuffer : MonoBehaviour {
 
     public static float moveHorizontal;
     public static float moveVertical;
+    public static float moveMagnitude;
 
     public static float cameraHorizontal;
     public static float cameraVertical;
+    public static float cameraMagnitude;
     #endregion
 
     // Update is called once per frame
@@ -44,6 +46,7 @@ public class InputBuffer : MonoBehaviour {
         {
             moveHorizontal = horizontalInput;
             moveVertical = verticalInput;
+            moveMagnitude = moveInput.magnitude;
         }
         else
         {
@@ -54,11 +57,13 @@ public class InputBuffer : MonoBehaviour {
         {
             cameraHorizontal = camHorizontalInput;
             cameraVertical = camVerticalInput;
+            cameraMagnitude = camInput.magnitude;
         }
         else
         {
             cameraHorizontal = 0.0f;
             cameraVertical = 0.0f;
+            cameraMagnitude = 0.0f;
         }
     }
 }

@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class NewCharacterMasterController : MonoBehaviour {
 
-    // [SerializeField] private NewCharacterMovementController movementController;
+    [SerializeField] private NewCharacterMovementController movementController;
+    [SerializeField] private Rigidbody                      rBody;
 
     private StateMachine characterStateMachine;
 	// Use this for initialization
@@ -16,9 +17,51 @@ public class NewCharacterMasterController : MonoBehaviour {
 	// FixedUpdate is called once per tick
 	void FixedUpdate ()
     {
-		
+        /* I don't want materials-based physics, setting velocities to zero allows the
+         * Rigidbody to prevent clipping while not causing any unwanted forces.
+         */
+        rBody.velocity = Vector3.zero;
+        rBody.angularVelocity = Vector3.zero;
+
+        Vector3 newPosition = rBody.position;
+        Quaternion newRotation = rBody.rotation;
+        // 
+        switch (characterStateMachine.GetCurrentStateId())
+        {
+        case(StateId.IDLE):
+            {
+                break;
+            }
+        case(StateId.MOVING):
+            {
+                newPosition += movementController.Move();
+                newRotation = movementController.GetFacingDirectionRotation();
+                break;
+            }
+        case(StateId.JUMPING):
+            {
+                break;
+            }
+        case(StateId.JUMPING_MOVING):
+            {
+                break;
+            }
+        }
+
+        rBody.MovePosition(newPosition);
+        rBody.MoveRotation(newRotation);
 	}
 
+    void LateUpdate()
+    {
+        UpdateStateMachine();
+    }
+
+
+    /// <summary>
+    /// After every update tick we want to update the state machine 
+    /// to be ready for the next frame.
+    /// </summary>
     private void UpdateStateMachine()
     {
         if (Utilities.GetMovementStickPosition() != Controls.neutralStickPosition)
