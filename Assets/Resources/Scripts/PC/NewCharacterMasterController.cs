@@ -5,6 +5,8 @@ using UnityEngine;
 public class NewCharacterMasterController : MonoBehaviour {
 
     [SerializeField] private NewCharacterMovementController movementController;
+    [SerializeField] private NewCollisionDetector           collisionDetector;
+    [SerializeField] private NewGravityController           gravityController;
     [SerializeField] private Rigidbody                      rBody;
 
     private StateMachine characterStateMachine;
@@ -40,10 +42,15 @@ public class NewCharacterMasterController : MonoBehaviour {
             }
         case(StateId.JUMPING):
             {
+                newPosition += gravityController.Move();
                 break;
             }
         case(StateId.JUMPING_MOVING):
             {
+                newPosition += gravityController.Move();
+
+                newPosition += movementController.Move(InputBuffer.moveMagnitude, Utilities.GetMovementStickPosition());
+                newRotation = movementController.GetFacingDirectionRotation();
                 break;
             }
         }
@@ -73,11 +80,18 @@ public class NewCharacterMasterController : MonoBehaviour {
             characterStateMachine.CommandMachine(CommandId.STOP);
         }
 
-        if (InputBuffer.jumpDown)
+        if (InputBuffer.jumpPressed)
         {
             characterStateMachine.CommandMachine(CommandId.JUMP);
         }
-        // if new gravity controller is grounded, land
+
+        if (collisionDetector.IsGrounded())
+        {
+            Debug.Log("Got it");
+            characterStateMachine.CommandMachine(CommandId.LAND);
+        }
+
+        Debug.Log(characterStateMachine.GetCurrentStateId());
     }
 
     private void InitializeStateMachine()

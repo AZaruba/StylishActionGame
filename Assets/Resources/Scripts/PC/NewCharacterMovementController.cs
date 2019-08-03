@@ -7,7 +7,7 @@ public class NewCharacterMovementController : MonoBehaviour {
     [SerializeField] private float moveSpeed;
 
     private Vector3 facingDirection;
-    private float currentMoveSpeed;
+    private float currentMoveSpeed = 0;
 
     public Vector3 Move(float moveMagnitude, float directionDegree)
     {
