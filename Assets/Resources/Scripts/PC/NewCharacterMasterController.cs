@@ -34,7 +34,7 @@ public class NewCharacterMasterController : MonoBehaviour {
             }
         case(StateId.MOVING):
             {
-                newPosition += movementController.Move();
+                newPosition += movementController.Move(InputBuffer.moveMagnitude, Utilities.GetMovementStickPosition());
                 newRotation = movementController.GetFacingDirectionRotation();
                 break;
             }

@@ -9,10 +9,10 @@ public class NewCharacterMovementController : MonoBehaviour {
     private Vector3 facingDirection;
     private float currentMoveSpeed;
 
-    public Vector3 Move()
+    public Vector3 Move(float moveMagnitude, float directionDegree)
     {
-        currentMoveSpeed = InputBuffer.moveMagnitude * moveSpeed;
-        facingDirection = GetDirectionRelativeToCamera();
+        currentMoveSpeed = moveMagnitude * moveSpeed;
+        facingDirection = GetDirectionRelativeToCamera(directionDegree);
         Vector3 movementVector = new Vector3();
 
         movementVector = facingDirection;
@@ -27,15 +27,15 @@ public class NewCharacterMovementController : MonoBehaviour {
     /// space viewed by the camera, projected down onto a flat plane
     /// </summary>
     /// <returns>The normalized direction projected into camera-ground space</returns>
-    private Vector3 GetDirectionRelativeToCamera()
+    private Vector3 GetDirectionRelativeToCamera(float directionDegree)
     {
         Vector3 relativeDirection = new Vector3();
         Vector3 cameraForward = Camera.main.transform.forward;
-        float stickAngle = Utilities.GetMovementStickPosition(); // move to InputBuffer?
+        // float stickAngle = Utilities.GetMovementStickPosition(); // move to InputBuffer?
 
-        relativeDirection.x = -1 * cameraForward.z * Mathf.Cos(stickAngle) + cameraForward.x * Mathf.Sin(stickAngle);
+        relativeDirection.x = -1 * cameraForward.z * Mathf.Cos(directionDegree) + cameraForward.x * Mathf.Sin(directionDegree);
         relativeDirection.y = 0;
-        relativeDirection.z = cameraForward.z * Mathf.Sin(stickAngle) + cameraForward.x * Mathf.Cos(stickAngle);
+        relativeDirection.z = cameraForward.z * Mathf.Sin(directionDegree) + cameraForward.x * Mathf.Cos(directionDegree);
 
         return relativeDirection.normalized;
     }
